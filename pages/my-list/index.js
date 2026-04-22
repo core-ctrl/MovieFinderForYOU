@@ -1,0 +1,79 @@
+// pages/my-list/index.js
+import Head from "next/head";
+import Link from "next/link";
+
+export default function MyListPage({ wishlist = [], addToWishlist, user, openAuth }) {
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center gap-4 pt-20">
+        <Head><title>My List — Movie Finder</title></Head>
+        <p className="text-4xl">🔒</p>
+        <p className="text-xl font-bold">Sign in to see your list</p>
+        <p className="text-neutral-400 text-sm">Save movies and series to watch later</p>
+        <button
+          onClick={openAuth}
+          className="mt-4 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl font-medium transition"
+        >
+          Sign In
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-black text-white pt-28 px-4 md:px-6">
+      <Head><title>My List — Movie Finder</title></Head>
+
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-3xl font-bold mb-2">❤️ My List</h1>
+        <p className="text-neutral-400 text-sm mb-8">
+          {wishlist.length} saved title{wishlist.length !== 1 ? "s" : ""}
+        </p>
+
+        {wishlist.length === 0 ? (
+          <div className="text-center py-20">
+            <p className="text-4xl mb-4">🎬</p>
+            <p className="text-neutral-400">Nothing saved yet.</p>
+            <Link href="/" className="mt-4 inline-block text-red-400 hover:underline">
+              Browse titles →
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+            {wishlist.map((item) => {
+              const isMovie = item.mediaType === "movie" || item.media_type === "movie" || item.title;
+              const href = isMovie
+                ? `/movies/${item.mediaId || item.id}`
+                : `/series/${item.mediaId || item.id}`;
+
+              return (
+                <div key={item.mediaId || item.id} className="group relative">
+                  <Link href={href}>
+                    <div className="aspect-[2/3] rounded-xl overflow-hidden bg-white/5 border border-white/10 mb-2">
+                      {item.posterPath || item.poster_path ? (
+                        <img
+                          src={`https://image.tmdb.org/t/p/w300${item.posterPath || item.poster_path}`}
+                          alt={item.title || item.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-4xl">🎬</div>
+                      )}
+                    </div>
+                  </Link>
+                  <p className="text-sm font-medium truncate">{item.title || item.name}</p>
+                  <button
+                    onClick={() => addToWishlist({ id: item.mediaId || item.id, media_type: item.mediaType || item.media_type, ...item })}
+                    className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition hover:bg-red-600/60"
+                  >
+                    ✕
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

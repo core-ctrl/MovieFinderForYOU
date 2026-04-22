@@ -1,0 +1,108 @@
+/* -------------------------------------------- */
+/*  TAILWIND BASE                               */
+/* -------------------------------------------- */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* -------------------------------------------- */
+/*  GLOBAL RESET                                */
+/* -------------------------------------------- */
+html,
+body,
+#__next {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: #000;
+    color: #fff;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+        Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Smooth scroll */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Accent variable */
+:root {
+    --accent: #e50914;
+}
+
+/* -------------------------------------------- */
+/*  SCROLLBAR STYLING (Netflix style)           */
+/* -------------------------------------------- */
+
+/* Hide scrollbars globally but keep scroll working */
+::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+* {
+    -ms-overflow-style: none;
+    /* IE + Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+/* Utility for scrollable components */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* -------------------------------------------- */
+/*  OPTIONAL: Visible on hover (nice effect)     */
+/* -------------------------------------------- */
+.no-scrollbar-hover::-webkit-scrollbar {
+    height: 6px;
+}
+
+.no-scrollbar-hover::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+    display: none;
+}
+
+.no-scrollbar-hover:hover::-webkit-scrollbar-thumb {
+    display: block;
+}
+
+/* -------------------------------------------- */
+/*  Small enhancements                          */
+/* -------------------------------------------- */
+img {
+    display: block;
+    max-width: 100%;
+    -webkit-font-smoothing: antialiased;
+}
+
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.28s ease both;
+}
