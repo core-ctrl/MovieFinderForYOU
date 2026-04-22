@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 // pages/movies/[id].jsx
+=======
+/ pages/movies / [id].jsx
+>>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -36,7 +40,11 @@ export default function MovieDetailPage({ addToWishlist, wishlist = [], openTrai
   return (
     <div className="min-h-screen bg-black text-white">
       <SEOMeta
+<<<<<<< HEAD
         title={`${movie.title} (${movie.release_date?.slice(0,4)}) — Watch Trailer & Where to Stream`}
+=======
+        title={`${movie.title} (${movie.release_date?.slice(0, 4)}) — Watch Trailer & Where to Stream`}
+>>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
         description={movie.overview?.slice(0, 160)}
         image={ogImage}
         url={`https://www.moviefinderforyou.com/movies/${movie.id}`}
@@ -60,7 +68,11 @@ export default function MovieDetailPage({ addToWishlist, wishlist = [], openTrai
             <h1 className="text-3xl md:text-5xl font-bold mb-3">{movie.title}</h1>
             <div className="flex flex-wrap items-center gap-3 text-sm text-neutral-300 mb-4">
               <span>⭐ {movie.vote_average?.toFixed(1)}</span>
+<<<<<<< HEAD
               {movie.release_date && <span>{movie.release_date.slice(0,4)}</span>}
+=======
+              {movie.release_date && <span>{movie.release_date.slice(0, 4)}</span>}
+>>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
               {movie.runtime > 0 && <span>{movie.runtime}m</span>}
               <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${movie.status === "Released" ? "bg-green-600/20 text-green-400" : "bg-yellow-600/20 text-yellow-400"}`}>
                 {movie.status === "Released" ? "Available" : movie.status}
@@ -148,4 +160,8 @@ export default function MovieDetailPage({ addToWishlist, wishlist = [], openTrai
       </div>
     </div>
   );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14

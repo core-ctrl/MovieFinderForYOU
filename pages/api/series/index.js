@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { fetchTrending } from '../../../lib/tmdb';
+=======
+import { fetchTopRatedTV, fetchByGenre } from "../../lib/tmdb";
+>>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
 
 export default async function handler(req, res) {
     const { page = 1, genre } = req.query;

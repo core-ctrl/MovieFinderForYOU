@@ -41,4 +41,8 @@ export default async function handler(req, res) {
     console.error("LOGIN_ERROR:", err);
     return res.status(500).json({ error: "Server error. Please try again." });
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14

@@ -39,7 +39,11 @@ export default function Home({
 
           {/* 2 — TOP THIS WEEK (trending, not all-time) */}
           <TopCarousel items={trendingMovies} title="🎬 Top Movies This Week" {...rowProps} />
+<<<<<<< HEAD
           <TopCarousel items={trendingTV}    title="📺 Top Series This Week" {...rowProps} />
+=======
+          <TopCarousel items={trendingTV} title="📺 Top Series This Week" {...rowProps} />
+>>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
 
           {/* 3 — PERSONALISED (only if logged in) */}
           {user && recommendedMovies.length > 0 && (
@@ -68,13 +72,20 @@ export default function Home({
               <p className="text-sm text-neutral-400">All-time greatest — movies, series & anime</p>
             </div>
           </div>
+<<<<<<< HEAD
           <SectionRow title="🏆 Goated Movies"  subtitle="Greatest films ever made"  items={goatedMovies}  {...rowProps} />
           <SectionRow title="👑 Goated Series"  subtitle="Legendary television"       items={goatedSeries}  {...rowProps} />
           <SectionRow title="⚡ Goated Anime"   subtitle="Greatest anime of all time" items={goatedAnime}   {...rowProps} />
+=======
+          <SectionRow title="🏆 Goated Movies" subtitle="Greatest films ever made" items={goatedMovies}  {...rowProps} />
+          <SectionRow title="👑 Goated Series" subtitle="Legendary television" items={goatedSeries}  {...rowProps} />
+          <SectionRow title="⚡ Goated Anime" subtitle="Greatest anime of all time" items={goatedAnime}   {...rowProps} />
+>>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
 
           <div className="border-t border-white/5 my-10" />
 
           {/* 5 — GENRE ROWS */}
+<<<<<<< HEAD
           <GenreRow title="💥 Action"    items={action}    genreId={28}    {...rowProps} />
           <GenreRow title="😂 Comedy"    items={comedy}    genreId={35}    {...rowProps} />
           <GenreRow title="😱 Thriller"  items={thriller}  genreId={53}    {...rowProps} />
@@ -82,6 +93,15 @@ export default function Home({
           <GenreRow title="❤️ Romance"   items={romance}   genreId={10749} {...rowProps} />
           <GenreRow title="🎌 Anime"     items={anime}     genreId={16}    {...rowProps} />
           <GenreRow title="🚀 Sci-Fi"    items={scifi}     genreId={878}   {...rowProps} />
+=======
+          <GenreRow title="💥 Action" items={action} genreId={28}    {...rowProps} />
+          <GenreRow title="😂 Comedy" items={comedy} genreId={35}    {...rowProps} />
+          <GenreRow title="😱 Thriller" items={thriller} genreId={53}    {...rowProps} />
+          <GenreRow title="👻 Horror" items={horror} genreId={27}    {...rowProps} />
+          <GenreRow title="❤️ Romance" items={romance} genreId={10749} {...rowProps} />
+          <GenreRow title="🎌 Anime" items={anime} genreId={16}    {...rowProps} />
+          <GenreRow title="🚀 Sci-Fi" items={scifi} genreId={878}   {...rowProps} />
+>>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
           <GenreRow title="🎭 Bollywood" items={bollywood} genreId={104}   {...rowProps} />
           <GenreRow title="🌟 Tollywood" items={tollywood} genreId={122}   {...rowProps} />
 
@@ -158,7 +178,11 @@ export async function getServerSideProps({ req }) {
         heroSlides, trending15, trendingMovies, trendingTV,
         goatedMovies: sort(goatedMoviesRaw),
         goatedSeries: sort(goatedSeriesRaw),
+<<<<<<< HEAD
         goatedAnime:  sort(goatedAnimeRaw),
+=======
+        goatedAnime: sort(goatedAnimeRaw),
+>>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
         action, comedy, thriller, horror, romance, anime, scifi, bollywood, tollywood,
         recommendedMovies, recommendedSeries,
       },
@@ -167,4 +191,8 @@ export async function getServerSideProps({ req }) {
     console.error("HOME_PAGE_ERROR:", err.message);
     return { props: {} };
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14

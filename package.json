@@ -1,6 +1,11 @@
 {
+<<<<<<< HEAD
   "name": "movie-finder-foryou",
   "version": "2.0.0",
+=======
+  "name": "movie-finder-nextjs",
+  "version": "1.0.0",
+>>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
@@ -14,6 +19,7 @@
     "bcryptjs": "^2.4.3",
     "clsx": "^2.1.1",
     "cookie": "^0.7.2",
+<<<<<<< HEAD
     "framer-motion": "^11.3.0",
     "gsap": "^3.12.5",
     "jsonwebtoken": "^9.0.2",
@@ -23,6 +29,14 @@
     "mongoose": "^8.4.0",
     "next": "^16.2.4",
     "nodemailer": "^8.0.5",
+=======
+    "jsonwebtoken": "^9.0.2",
+    "lodash.debounce": "^4.0.8",
+    "lucide-react": "^0.553.0",
+    "mongoose": "^8.4.0",
+    "next": "^14.2.13",
+    "nodemailer": "^6.9.14",
+>>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^5.5.0",
@@ -33,4 +47,8 @@
     "postcss": "^8.4.31",
     "tailwindcss": "^3.4.1"
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14

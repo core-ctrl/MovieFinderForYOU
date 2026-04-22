@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
 // components/AuthWidget.jsx
 import { useState } from "react";
 import axios from "axios";
@@ -15,7 +19,11 @@ function PasswordStrength({ password }) {
   return (
     <div className="mt-1">
       <div className="flex gap-1 mb-1">
+<<<<<<< HEAD
         {[1,2,3].map(i => <div key={i} className={`h-1 flex-1 rounded-full transition-all ${i <= score ? color : "bg-white/10"}`} />)}
+=======
+        {[1, 2, 3].map(i => <div key={i} className={`h-1 flex-1 rounded-full transition-all ${i <= score ? color : "bg-white/10"}`} />)}
+>>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
       </div>
       <div className="flex gap-3">
         {checks.map(c => <span key={c.label} className={`text-xs ${c.ok ? "text-green-400" : "text-neutral-500"}`}>{c.ok ? "✓" : "·"} {c.label}</span>)}
@@ -79,7 +87,11 @@ export default function AuthWidget({ open, onClose, onLogin }) {
           <p className="text-neutral-400 text-sm">
             {mode === "login" ? "Sign in to save your favourites"
               : mode === "signup" ? "Join for personalised recommendations"
+<<<<<<< HEAD
               : "Enter your email to get a reset link"}
+=======
+                : "Enter your email to get a reset link"}
+>>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
           </p>
         </div>
 
