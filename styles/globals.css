@@ -1,14 +1,11 @@
-<<<<<<< HEAD
-=======
+
 /* -------------------------------------------- */
 /*  TAILWIND BASE                               */
 /* -------------------------------------------- */
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-<<<<<<< HEAD
 /* ─── DESIGN TOKENS ─────────────────────────────────────────────── */
 :root {
   --accent:        #e50914;
@@ -226,7 +223,7 @@ img  { display: block; max-width: 100%; }
 /* ─── LINE CLAMP ─────────────────────────────────────────────────── */
 .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-=======
+
 /* -------------------------------------------- */
 /*  GLOBAL RESET                                */
 /* -------------------------------------------- */
@@ -328,4 +325,4 @@ img {
 .animate-fadeIn {
     animation: fadeIn 0.28s ease both;
 }
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
+
