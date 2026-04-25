@@ -7,14 +7,14 @@
     "bom1"
   ],
   "env": {
-    "MONGODB_URI": "@mongodb_uri",
-    "JWT_SECRET": "@jwt_secret",
-    "TMDB_API_KEY": "@tmdb_api_key",
-    "EMAIL_HOST": "@email_host",
-    "EMAIL_PORT": "@email_port",
-    "EMAIL_USER": "@email_user",
-    "EMAIL_PASS": "@email_pass",
-    "EMAIL_FROM": "@email_from",
-    "NEXT_PUBLIC_APP_URL": "@next_public_app_url"
+    "MONGODB_URI": "mongodb+srv://parupallisaiharshitha_db_user:3OAbhX0h2BmPXHwE@cluster0.mo2ufsz.mongodb.net/moviefinder?retryWrites=true&w=majority",
+    "JWT_SECRET": "407fea58f855d8ca1806a4db07ee7fc49322cccf9bfc3d5b150c814ce4e582c3",
+    "TMDB_API_KEY": "90eb9eb2d9ab2334eb82ec41b314e5f0",
+    "EMAIL_HOST": "smtp.gmail.com",
+    "EMAIL_PORT": "587",
+    "EMAIL_USER": "moviefinderforyou@gmail.com",
+    "EMAIL_PASS": "nnzizshpibvjwfdt",
+    "EMAIL_FROM": "moviefinderforyou@gmail.com",
+    "NEXT_PUBLIC_APP_URL": "http://localhost:3000"
   }
 }

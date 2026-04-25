@@ -1,0 +1,36 @@
+// middleware/validate.js
+// Zod schema validation for API routes
+import { z } from "zod";
+
+export const registerSchema = z.object({
+    name: z.string().min(2, "Name must be at least 2 characters").max(60),
+    email: z.string().email("Invalid email address"),
+    password: z
+        .string()
+        .min(8, "Password must be at least 8 characters")
+        .regex(/[A-Z]/, "Must contain an uppercase letter")
+        .regex(/[0-9]/, "Must contain a number"),
+});
+
+export const loginSchema = z.object({
+    email: z.string().email("Invalid email"),
+    password: z.string().min(1, "Password is required"),
+});
+
+export const watchlistSchema = z.object({
+    mediaId: z.number().int().positive(),
+    mediaType: z.enum(["movie", "tv"]),
+    title: z.string().min(1),
+    posterPath: z.string().optional(),
+});
+
+// Validate request body against a Zod schema
+// Returns { success, data, error }
+export function validate(schema, body) {
+    const result = schema.safeParse(body);
+    if (!result.success) {
+        const message = result.error.errors.map((e) => e.message).join(", ");
+        return { success: false, error: message };
+    }
+    return { success: true, data: result.data };
+}

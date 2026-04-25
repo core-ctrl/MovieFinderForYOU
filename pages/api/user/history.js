@@ -1,33 +1,20 @@
+
 // pages/api/user/history.js
-// GET: get watch history | POST: add to history
-import { connectDB } from "@/lib/mongodb";
-import User from "@/models/User";
-import { getUserFromRequest } from "@/lib/auth";
+import { requireAuth } from "@/middleware/requireAuth";
+import * as WatchlistService from "@/services/watchlistService";
 
 export default async function handler(req, res) {
-  const decoded = getUserFromRequest(req);
+  const decoded = requireAuth(req);
   if (!decoded) return res.status(401).json({ error: "Not authenticated" });
 
-  await connectDB();
-
   if (req.method === "GET") {
-    const user = await User.findById(decoded.id).select("watchHistory");
-    return res.status(200).json({ history: user?.watchHistory || [] });
+    const history = await WatchlistService.getHistory(decoded.id);
+    return res.status(200).json({ history });
   }
 
   if (req.method === "POST") {
     const { mediaId, mediaType, title, posterPath } = req.body;
-
-    await User.findByIdAndUpdate(decoded.id, {
-      $push: {
-        watchHistory: {
-          $each: [{ mediaId, mediaType, title, posterPath, watchedAt: new Date() }],
-          $position: 0,
-          $slice: 50, // Keep last 50 items
-        },
-      },
-    });
-
+    await WatchlistService.addToHistory(decoded.id, { mediaId, mediaType, title, posterPath });
     return res.status(200).json({ message: "Added to history" });
   }
 

@@ -1,0 +1,36 @@
+# k8s/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: moviefinder-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"  # Auto SSL
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - moviefinderforyou.com
+        - www.moviefinderforyou.com
+      secretName: moviefinder-tls
+  rules:
+    - host: moviefinderforyou.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: moviefinder-service
+                port:
+                  number: 80
+    - host: www.moviefinderforyou.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: moviefinder-service
+                port:
+                  number: 80

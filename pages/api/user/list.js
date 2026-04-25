@@ -1,45 +1,34 @@
 // pages/api/user/list.js
 // GET: fetch wishlist | POST: add to wishlist | DELETE: remove from wishlist
 import { connectDB } from "@/lib/mongodb";
-import User from "@/models/User";
-import { getUserFromRequest } from "@/lib/auth";
+// pages/api/user/list.js
+import { requireAuth } from "@/middleware/requireAuth";
+import { validate, watchlistSchema } from "@/middleware/validate";
+import * as WatchlistService from "@/services/watchlistService";
 
 export default async function handler(req, res) {
-  const decoded = getUserFromRequest(req);
+  const decoded = requireAuth(req);
   if (!decoded) return res.status(401).json({ error: "Not authenticated" });
 
-  await connectDB();
-
   if (req.method === "GET") {
-    const user = await User.findById(decoded.id);
-    return res.status(200).json({ list: user?.wishlist || [] });
+    const list = await WatchlistService.getWatchlist(decoded.id);
+    return res.status(200).json({ list });
   }
 
   if (req.method === "POST") {
-    const { mediaId, mediaType, title, posterPath } = req.body;
-
-    await User.findByIdAndUpdate(
-      decoded.id,
-      {
-        $addToSet: {
-          wishlist: { mediaId, mediaType, title, posterPath, addedAt: new Date() },
-        },
-      },
-      { new: true }
-    );
-
-    return res.status(200).json({ message: "Added to list" });
+    const { success, data, error } = validate(watchlistSchema, req.body);
+    if (!success) return res.status(400).json({ error });
+    await WatchlistService.addToWatchlist(decoded.id, data);
+    return res.status(200).json({ message: "Added" });
   }
 
   if (req.method === "DELETE") {
     const { mediaId, mediaType } = req.query;
-
-    await User.findByIdAndUpdate(decoded.id, {
-      $pull: { wishlist: { mediaId: Number(mediaId), mediaType } },
-    });
-
-    return res.status(200).json({ message: "Removed from list" });
+    await WatchlistService.removeFromWatchlist(decoded.id, mediaId, mediaType);
+    return res.status(200).json({ message: "Removed" });
   }
 
   return res.status(405).json({ error: "Method not allowed" });
 }
+
+

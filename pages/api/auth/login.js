@@ -1,48 +1,30 @@
 // pages/api/auth/login.js
 import { connectDB } from "@/lib/mongodb";
-import User from "@/models/User";
-import { signToken } from "@/lib/auth";
+// pages/api/auth/login.js
+import { validate, loginSchema } from "@/middleware/validate";
 import { authLimiter } from "@/lib/rateLimit";
+import * as AuthService from "@/services/authService";
 import cookie from "cookie";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  // Rate limiting
   const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unknown";
   const limit = authLimiter(ip);
-  if (!limit.allowed) {
-    return res.status(429).json({ error: `Too many attempts. Try again in ${limit.retryAfter} seconds.` });
-  }
+  if (!limit.allowed)
+    return res.status(429).json({ error: `Too many attempts. Retry in ${limit.retryAfter}s` });
 
-  const { email, password } = req.body;
-  if (!email || !password) return res.status(400).json({ error: "Email and password are required" });
+  const { success, data, error } = validate(loginSchema, req.body);
+  if (!success) return res.status(400).json({ error });
 
   try {
-    await connectDB();
-    const user = await User.findOne({ email }).select("+password");
-    if (!user) return res.status(401).json({ error: "Invalid email or password" });
-
-    const isValid = await user.comparePassword(password);
-    if (!isValid) return res.status(401).json({ error: "Invalid email or password" });
-
-    const token = signToken({ id: user._id, email: user.email, name: user.name });
-
+    const { token, user } = await AuthService.loginUser(data);
     res.setHeader("Set-Cookie", cookie.serialize("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7,
-      path: "/",
+      httpOnly: true, secure: process.env.NODE_ENV === "production",
+      sameSite: "lax", maxAge: 60 * 60 * 24 * 7, path: "/",
     }));
-
-    return res.status(200).json({ user: { id: user._id, name: user.name, email: user.email } });
+    return res.status(200).json({ user });
   } catch (err) {
-    console.error("LOGIN_ERROR:", err);
-    return res.status(500).json({ error: "Server error. Please try again." });
+    return res.status(401).json({ error: err.message });
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
