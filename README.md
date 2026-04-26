@@ -1,232 +1,263 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=E8C84A&height=200&section=header&text=MOVIEFINDER&fontSize=60&fontColor=0a0a0f&fontAlignY=38&desc=A%20Cinematic%20Full-Stack%20Movie%20%26%20Series%20Discovery%20Platform&descAlignY=58&descColor=0a0a0f&descSize=16&animation=fadeIn" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=E8C84A&height=180&section=header&text=MOVIEFINDER&fontSize=55&fontColor=0a0a0f&fontAlignY=38&desc=Cinematic%20Full-Stack%20Movie%20%26%20Series%20Discovery&descAlignY=60&descColor=0a0a0f&descSize=15&animation=fadeIn" width="100%"/>
 
 <br/>
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=14&duration=2500&pause=800&color=E8C84A&center=true&vCenter=true&width=600&lines=🎬+Next.js+14+%7C+MongoDB+%7C+TMDB+API;🔒+JWT+Auth+%7C+Rate+Limited+%7C+Secure+Cookies;🐳+Docker+Ready+%7C+Nginx+%7C+Production+Build;❤️+Watchlist+%7C+Trailers+%7C+Personalised+Recs" alt="Typing SVG"/>
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=14&duration=2500&pause=800&color=E8C84A&center=true&vCenter=true&multiline=false&width=620&lines=Next.js+14+%7C+React+%7C+Node.js+%7C+MongoDB+Atlas;JWT+Auth+%7C+TMDB+API+%7C+Docker+%7C+Nginx;Watchlist+%7C+Trailers+%7C+Personalised+Recommendations;Ken+Burns+Hero+%7C+Bento+Grid+%7C+Framer+Motion" alt="Typing SVG" />
 
 <br/><br/>
 
-[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org)
-[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-00ED64?style=for-the-badge&logo=mongodb&logoColor=white)](https://mongodb.com)
-[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
-[![TMDB](https://img.shields.io/badge/Data-TMDB-01b4e4?style=for-the-badge&logo=themoviedb&logoColor=white)](https://themoviedb.org)
-[![JWT](https://img.shields.io/badge/Auth-JWT-FB015B?style=for-the-badge&logo=jsonwebtokens&logoColor=white)](https://jwt.io)
-[![TailwindCSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+<!-- STACK BADGES — all use shields.io, 100% reliable on GitHub -->
+<img src="https://img.shields.io/badge/Next.js-14-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js"/>
+<img src="https://img.shields.io/badge/React-18-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React"/>
+<img src="https://img.shields.io/badge/Node.js-Runtime-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js"/>
+<img src="https://img.shields.io/badge/MongoDB-Atlas-00ED64?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB"/>
 
 <br/>
 
-![Repo Views](https://komarev.com/ghpvc/?username=moviefinder&color=e8c84a&style=for-the-badge&label=REPO+VIEWS)
+<img src="https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker"/>
+<img src="https://img.shields.io/badge/TMDB-API-01b4e4?style=for-the-badge&logo=themoviedb&logoColor=white" alt="TMDB"/>
+<img src="https://img.shields.io/badge/JWT-Auth-FB015B?style=for-the-badge&logo=jsonwebtokens&logoColor=white" alt="JWT"/>
+<img src="https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind"/>
+<img src="https://img.shields.io/badge/Framer-Motion-black?style=for-the-badge&logo=framer&logoColor=white" alt="Framer Motion"/>
+
+<br/><br/>
+
+<img src="https://img.shields.io/github/stars/core-ctrl/MovieFinderForYOU?style=for-the-badge&color=E8C84A&labelColor=0a0a0f" alt="Stars"/>
+<img src="https://img.shields.io/github/forks/core-ctrl/MovieFinderForYOU?style=for-the-badge&color=E8C84A&labelColor=0a0a0f" alt="Forks"/>
+<img src="https://img.shields.io/github/last-commit/core-ctrl/MovieFinderForYOU?style=for-the-badge&color=E8C84A&labelColor=0a0a0f" alt="Last Commit"/>
+<img src="https://img.shields.io/github/license/core-ctrl/MovieFinderForYOU?style=for-the-badge&color=E8C84A&labelColor=0a0a0f" alt="License"/>
 
 </div>
 
-<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%"/>
+---
+
+## 🧠 What is This?
+
+> **MovieFinder** is a **Next.js 14** full-stack app — meaning React handles the UI, and Next.js API routes run as serverless **Node.js** functions on the backend. One codebase, frontend + backend together.
+
+```
+Browser (React + Tailwind)
+       ↕
+Next.js 14  ←→  Node.js Runtime  ←→  MongoDB Atlas
+       ↕
+   TMDB API
+```
+
+---
 
 ## ✨ Features
 
-<div align="center">
-
-| &nbsp; | Feature | Details |
-|:------:|:--------|:--------|
+| | Feature | Details |
+|:---:|:---|:---|
 | 🎥 | **Cinematic Hero** | Ken Burns effect, parallax, dominant colour extraction |
 | 🔥 | **Trending Rows** | Real-time trending movies & series from TMDB |
 | 🐐 | **GOAT Section** | All-time greatest movies, series & anime |
 | 🎯 | **Personalised** | Recommendations based on your favourite genres |
 | 🎬 | **Trailers** | YouTube autoplay via global trailer modal |
-| ❤️ | **Watchlist** | Save titles — synced to MongoDB when logged in |
+| ❤️ | **Watchlist** | Synced to MongoDB when logged in, localStorage for guests |
 | 🔍 | **Search** | Instant search across movies & series |
-| 🔒 | **Auth** | JWT email/password, rate limited, secure cookies |
+| 🔒 | **Auth** | JWT email/password, rate limited, HTTP-only cookies |
 | 📧 | **Email** | Welcome & password reset via Gmail SMTP |
-| ⚙️ | **Admin** | Hidden admin panel at `/admin` |
-| 🐳 | **Docker** | Production-ready Dockerfile + docker-compose |
+| ⚙️ | **Admin** | Hidden panel at `/admin` — user management & stats |
+| 🐳 | **Docker** | Multi-stage Dockerfile + docker-compose + Nginx |
 | 🗺️ | **SEO** | Sitemap, robots.txt, JSON-LD schema, Open Graph |
+| 🔥 | **Firebase** | Analytics via Firebase (env-safe config) |
 | 📜 | **Legal** | Privacy, Terms, DMCA, Cookie consent |
 
-</div>
-
-<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%"/>
+---
 
 ## 🚀 Quick Start
 
 <details>
-<summary><b>🖥️ &nbsp;Local Development</b></summary>
+<summary><b>🖥️ Local Development</b></summary>
 <br/>
 
 ```bash
-# 1. Clone the repo
-git clone https://github.com/YOUR_USERNAME/moviefinder.git
-cd moviefinder
-
-# 2. Install dependencies
+git clone https://github.com/core-ctrl/MovieFinderForYOU.git
+cd MovieFinderForYOU
 npm install
-
-# 3. Configure environment
-cp .env.local.example .env.local
-# Fill in your keys (see Environment Variables below)
-
-# 4. Start dev server
+cp .env.example .env.local
+# fill in your keys in .env.local
 npm run dev
-# → http://localhost:3000
 ```
+
+Open → [http://localhost:3000](http://localhost:3000)
 
 </details>
 
 <details>
-<summary><b>🐳 &nbsp;Docker — Production</b></summary>
+<summary><b>🐳 Docker — Production</b></summary>
 <br/>
 
 ```bash
-# Build and start all services
 docker-compose up -d
-
-# View live logs
 docker-compose logs -f app
-
-# Restart app container only
 docker-compose restart app
-
-# Tear down
 docker-compose down
 ```
 
 </details>
 
 <details>
-<summary><b>⚙️ &nbsp;Environment Variables</b></summary>
+<summary><b>⚙️ Environment Variables</b></summary>
 <br/>
 
+Create `.env.local` — **never commit this file.**
+
 ```env
-TMDB_API_KEY=                    # themoviedb.org/settings/api
+# TMDB
+TMDB_API_KEY=
 NEXT_PUBLIC_TMDB_IMAGE=https://image.tmdb.org/t/p
-MONGODB_URI=                     # MongoDB Atlas connection string
-JWT_SECRET=                      # Min 32 chars random string
+
+# MongoDB
+MONGODB_URI=
+
+# Auth
+JWT_SECRET=
+
+# Email
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
-EMAIL_USER=moviefinderforyou@gmail.com
-EMAIL_PASS=                      # Gmail App Password
-EMAIL_FROM="Movie Finder <yourmail>"
-NEXT_PUBLIC_APP_URL=             # e.g. https://moviefinder.com
+EMAIL_USER=
+EMAIL_PASS=
+EMAIL_FROM=
+
+# App
+NEXT_PUBLIC_APP_URL=
+
+# Firebase
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+NEXT_PUBLIC_FIREBASE_APP_ID=
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=
 ```
 
 </details>
 
-<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%"/>
+---
 
 ## 🏗️ Architecture
 
 ```
-🎬 movie-finder/
+MovieFinderForYOU/
 │
-├── 🧩 components/
-│   ├── Navbar.jsx          # Animated navbar — Framer Motion
-│   ├── MovieCard.jsx       # Poster card with hover preview
-│   ├── BentoGrid.jsx       # Editorial bento layout
-│   ├── SectionRow.jsx      # Netflix-style horizontal scroll row
-│   ├── TopCarousel.jsx     # Ranked top picks carousel
-│   ├── HeroSlider.jsx      # Cinematic hero + YouTube embed
-│   ├── TrailerModal.jsx    # Global trailer player
-│   ├── AuthWidget.jsx      # Login / signup / forgot password
-│   ├── CookieBanner.jsx    # GDPR cookie consent
-│   ├── SEOMeta.jsx         # SEO + JSON-LD schema
-│   └── SkeletonCard.jsx    # Loading skeleton
+├── components/
+│   ├── Navbar.jsx            # Framer Motion animated navbar
+│   ├── MovieCard.jsx         # Poster card with hover preview
+│   ├── BentoGrid.jsx         # Editorial bento layout
+│   ├── SectionRow.jsx        # Netflix-style scroll row
+│   ├── TopCarousel.jsx       # Ranked top picks
+│   ├── HeroSlider.jsx        # Cinematic hero + YouTube embed
+│   ├── TrailerModal.jsx      # Global trailer player
+│   ├── AuthWidget.jsx        # Login / signup / forgot password
+│   ├── CookieBanner.jsx      # GDPR cookie consent
+│   ├── SEOMeta.jsx           # SEO + JSON-LD
+│   └── SkeletonCard.jsx      # Loading skeleton
 │
-├── 📄 pages/
-│   ├── index.js            # Homepage
-│   ├── movies/[id].jsx     # Movie detail
-│   ├── series/[id].jsx     # Series detail
-│   ├── search.js           # Search results
-│   ├── my-list/            # Saved titles
-│   ├── profile/            # User profile + genre preferences
-│   ├── admin/              # Hidden admin panel
-│   ├── privacy.js          # Privacy Policy
-│   ├── terms.js            # Terms of Service
-│   ├── dmca.js             # DMCA Policy
-│   ├── about.js            # About + TMDB attribution
-│   └── api/                # Backend API routes
+├── pages/                    # Next.js Pages Router
+│   ├── index.js              # Homepage
+│   ├── movies/[id].jsx       # Movie detail (dynamic route)
+│   ├── series/[id].jsx       # Series detail (dynamic route)
+│   ├── search.js             # Search results
+│   ├── my-list/              # Saved watchlist
+│   ├── profile/              # User profile + genre prefs
+│   ├── admin/                # Hidden admin panel
+│   └── api/                  # Node.js serverless API routes
+│       ├── auth/             # register, login, logout, me
+│       ├── user/             # list, preferences
+│       ├── media/            # movie & TV detail proxy
+│       ├── search/           # TMDB search
+│       └── admin/            # admin-only stats
 │
-├── 📦 lib/
-│   ├── mongodb.js          # Mongoose connection
-│   ├── auth.js             # JWT utilities
-│   ├── tmdb.js             # TMDB API client
-│   ├── mailer.js           # Nodemailer email sender
-│   └── rateLimit.js        # Auth rate limiter
+├── lib/
+│   ├── mongodb.js            # Mongoose connection
+│   ├── auth.js               # JWT sign / verify
+│   ├── tmdb.js               # TMDB API client
+│   ├── firebase.js           # Firebase (env-safe)
+│   ├── mailer.js             # Nodemailer
+│   └── rateLimit.js          # Auth rate limiter
 │
-├── 🗄️  models/
-│   └── User.js             # User schema — watchlist, prefs, history
+├── models/
+│   └── User.js               # Mongoose schema
 │
-├── 🪝 hooks/
-│   └── useLenis.js         # Smooth scroll
+├── hooks/
+│   └── useLenis.js           # Smooth scroll
 │
-├── 🐳 Dockerfile           # Multi-stage production build
-├── 🐳 docker-compose.yml   # App + MongoDB + Nginx
-└── 🌐 nginx.conf           # Reverse proxy config
+├── Dockerfile                # Multi-stage build
+├── docker-compose.yml        # App + MongoDB + Nginx
+├── nginx.conf                # Reverse proxy
+└── .env.example              # Safe template — no real secrets
 ```
 
-<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%"/>
+---
 
 ## 🔌 API Routes
 
-<div align="center">
+> All routes live under `pages/api/` and run as **Node.js serverless functions** via Next.js.
 
 | Route | Method | Description |
 |:------|:------:|:------------|
 | `/api/auth/register` | `POST` | Create account |
-| `/api/auth/login` | `POST` | Sign in |
-| `/api/auth/logout` | `POST` | Sign out |
+| `/api/auth/login` | `POST` | Sign in, sets HTTP-only cookie |
+| `/api/auth/logout` | `POST` | Clear session cookie |
 | `/api/auth/me` | `GET` | Get current user |
-| `/api/user/list` | `GET` `POST` `DELETE` | Watchlist management |
+| `/api/user/list` | `GET` `POST` `DELETE` | Watchlist CRUD |
 | `/api/user/preferences` | `GET` `POST` | Genre preferences |
-| `/api/media/[type]/[id]` | `GET` | Movie / TV details |
+| `/api/media/[type]/[id]` | `GET` | Movie / TV detail via TMDB |
 | `/api/search` | `GET` | Search TMDB |
-| `/api/admin/stats` | `GET` | Admin stats *(admin only)* |
+| `/api/admin/stats` | `GET` | Admin only — user stats |
 
-</div>
+---
 
-<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%"/>
-
-## 🛠️ Tech Stack
+## 🛠️ Full Tech Stack
 
 <div align="center">
 
-![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
-![Mongoose](https://img.shields.io/badge/Mongoose-880000?style=for-the-badge&logo=mongoose&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
-![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white)
-![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)
-![Nodemailer](https://img.shields.io/badge/Nodemailer-0F9DCE?style=for-the-badge&logo=minutemailer&logoColor=white)
-![Framer Motion](https://img.shields.io/badge/Framer_Motion-black?style=for-the-badge&logo=framer&logoColor=white)
+| Layer | Technology |
+|:------|:-----------|
+| **Framework** | Next.js 14 (Pages Router) |
+| **Frontend** | React 18 + Tailwind CSS + Framer Motion |
+| **Backend** | Node.js via Next.js API Routes |
+| **Database** | MongoDB Atlas + Mongoose |
+| **Auth** | JWT — HTTP-only cookies, bcrypt, rate limiting |
+| **Media Data** | TMDB API |
+| **Email** | Nodemailer + Gmail SMTP |
+| **Analytics** | Firebase Analytics |
+| **Infra** | Docker + Nginx + docker-compose |
+| **SEO** | JSON-LD, Open Graph, sitemap.xml, robots.txt |
 
 </div>
 
-<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%"/>
+---
 
 ## ⚙️ Admin Panel
 
-> Access at `/admin` — not linked from any public page.
-> To grant admin: set `isAdmin: true` on a user document in MongoDB Atlas.
+Access at `/admin` — not linked anywhere public.
 
-- 👥 User management — view, delete, promote
+To promote a user: set `isAdmin: true` on their document in MongoDB Atlas.
+
+- 👥 View / delete / promote users
 - 📊 Stats overview
-- 🆕 Recent signups feed
+- 🆕 Recent signups
 
-<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%"/>
+---
 
 ## 📜 Legal
 
 > This product uses the TMDB API but is **not** endorsed or certified by TMDB.
 > All movie data, images and metadata © their respective rights holders.
-> This app is a **discovery tool only** — no content is hosted or distributed.
+> This is a **discovery tool only** — no content is hosted or streamed.
 
-<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%"/>
+---
 
 <div align="center">
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=13&duration=3000&pause=1000&color=E8C84A&center=true&vCenter=true&width=440&lines=Thanks+for+checking+out+MovieFinder!;Drop+a+⭐+if+you+like+the+project;Built+with+❤️+%7C+Data+by+TMDB" alt="Footer typing"/>
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=12&duration=3000&pause=1000&color=E8C84A&center=true&vCenter=true&width=440&lines=Drop+a+%E2%AD%90+if+you+like+the+project!;Built+with+%E2%9D%A4%EF%B8%8F+%7C+Data+by+TMDB+API" alt="footer typing"/>
 
 <br/><br/>
 
