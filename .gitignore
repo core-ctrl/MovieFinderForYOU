@@ -13,3 +13,10 @@ out/
 *.log
 .vercel
 .env*.local
+
+.env
+.env.local
+.env.example
+.env*.local
+vercel.json
+.vercel
