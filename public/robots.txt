@@ -1,8 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /admin
-Disallow: /api/
-Disallow: /profile
-Disallow: /my-list
-
-Sitemap: https://www.moviefinderforyou.com/sitemap.xml

@@ -1,23 +1,21 @@
-// components/CookieBanner.jsx
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { CookieIcon, Shield01Icon } from "@hugeicons/core-free-icons";
+import { readCookieConsent, writeCookieConsent } from "../lib/analytics";
+import AppIcon from "./AppIcon";
 
 export default function CookieBanner() {
-<<<<<<< HEAD
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const consent = localStorage.getItem("cookie_consent");
-    if (!consent) setVisible(true);
+    const consent = readCookieConsent();
+    if (!consent.updatedAt) {
+      setVisible(true);
+    }
   }, []);
 
-  const accept = () => {
-    localStorage.setItem("cookie_consent", "accepted");
-    setVisible(false);
-  };
-
-  const decline = () => {
-    localStorage.setItem("cookie_consent", "declined");
+  const saveConsent = (nextConsent) => {
+    writeCookieConsent(nextConsent);
     setVisible(false);
   };
 
@@ -25,76 +23,46 @@ export default function CookieBanner() {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-[200] p-4">
-      <div className="max-w-4xl mx-auto bg-neutral-900 border border-white/10 rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center gap-4 shadow-2xl animate-fadeIn">
-        <div className="flex-1">
-          <p className="text-white text-sm font-medium mb-1">🍪 We use cookies</p>
-          <p className="text-neutral-400 text-xs leading-relaxed">
-            We use cookies to keep you logged in and improve your experience.
-            By clicking Accept, you agree to our{" "}
-            <Link href="/privacy" className="text-red-400 hover:underline">Privacy Policy</Link>
-            {" "}and{" "}
-            <Link href="/terms" className="text-red-400 hover:underline">Terms of Service</Link>.
-          </p>
+      <div className="mx-auto flex max-w-5xl flex-col gap-4 rounded-3xl border border-white/10 bg-neutral-950/95 p-5 shadow-2xl backdrop-blur-xl animate-fadeIn md:flex-row md:items-center">
+        <div className="flex flex-1 gap-4">
+          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-red-400">
+            <AppIcon icon={CookieIcon} size={20} />
+          </div>
+          <div>
+            <p className="mb-1 flex items-center gap-2 text-sm font-semibold text-white">
+              Privacy-first cookies
+              <AppIcon icon={Shield01Icon} size={15} className="text-emerald-400" />
+            </p>
+            <p className="text-sm leading-relaxed text-neutral-400">
+              We only activate analytics and ads after consent. Essential cookies keep your session secure and remember account-related settings.
+              Read our{" "}
+              <Link href="/privacy-policy" className="text-red-400 hover:underline">
+                Privacy Policy
+              </Link>
+              {" "}and{" "}
+              <Link href="/terms-and-conditions" className="text-red-400 hover:underline">
+                Terms and Conditions
+              </Link>
+              .
+            </p>
+          </div>
         </div>
-        <div className="flex gap-3 flex-shrink-0">
-          <button onClick={decline}
-            className="px-4 py-2 text-sm text-neutral-400 hover:text-white border border-white/10 rounded-lg transition">
-            Decline
+
+        <div className="flex flex-shrink-0 flex-col gap-2 sm:flex-row">
+          <button
+            onClick={() => saveConsent({ essential: true, analytics: false, ads: false })}
+            className="rounded-xl border border-white/10 px-4 py-2 text-sm font-medium text-neutral-300 transition hover:border-white/20 hover:text-white"
+          >
+            Essential only
           </button>
-          <button onClick={accept}
-            className="px-4 py-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition">
-            Accept All
+          <button
+            onClick={() => saveConsent({ essential: true, analytics: true, ads: true })}
+            className="rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-500"
+          >
+            Accept analytics and ads
           </button>
         </div>
       </div>
     </div>
   );
 }
-=======
-    const [visible, setVisible] = useState(false);
-
-    useEffect(() => {
-        const consent = localStorage.getItem("cookie_consent");
-        if (!consent) setVisible(true);
-    }, []);
-
-    const accept = () => {
-        localStorage.setItem("cookie_consent", "accepted");
-        setVisible(false);
-    };
-
-    const decline = () => {
-        localStorage.setItem("cookie_consent", "declined");
-        setVisible(false);
-    };
-
-    if (!visible) return null;
-
-    return (
-        <div className="fixed bottom-0 left-0 right-0 z-[200] p-4">
-            <div className="max-w-4xl mx-auto bg-neutral-900 border border-white/10 rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center gap-4 shadow-2xl animate-fadeIn">
-                <div className="flex-1">
-                    <p className="text-white text-sm font-medium mb-1">🍪 We use cookies</p>
-                    <p className="text-neutral-400 text-xs leading-relaxed">
-                        We use cookies to keep you logged in and improve your experience.
-                        By clicking Accept, you agree to our{" "}
-                        <Link href="/privacy" className="text-red-400 hover:underline">Privacy Policy</Link>
-                        {" "}and{" "}
-                        <Link href="/terms" className="text-red-400 hover:underline">Terms of Service</Link>.
-                    </p>
-                </div>
-                <div className="flex gap-3 flex-shrink-0">
-                    <button onClick={decline}
-                        className="px-4 py-2 text-sm text-neutral-400 hover:text-white border border-white/10 rounded-lg transition">
-                        Decline
-                    </button>
-                    <button onClick={accept}
-                        className="px-4 py-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition">
-                        Accept All
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-}
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14

@@ -4,10 +4,18 @@ import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
-import { FaUser, FaSignOutAlt, FaHeart, FaSearch, FaBars, FaTimes } from "react-icons/fa";
+import {
+  Cancel01Icon,
+  FavouriteIcon,
+  Logout01Icon,
+  Menu01Icon,
+  Search01Icon,
+  UserIcon,
+} from "@hugeicons/core-free-icons";
 import SmartSearch from "./SmartSearch";
 import { logoutUser, selectUser } from "../store/slices/authSlice";
 import { openAuthModal } from "../store/slices/uiSlice";
+import AppIcon from "./AppIcon";
 
 export default function Navbar() {
   const dispatch = useDispatch();
@@ -31,6 +39,7 @@ export default function Navbar() {
     { name: "Home", href: "/" },
     { name: "Movies", href: "/movies" },
     { name: "Series", href: "/series" },
+    { name: "Blog", href: "/blog" },
     { name: "My List", href: "/my-list" },
   ];
 
@@ -75,7 +84,7 @@ export default function Navbar() {
 
             {/* Search icon — mobile */}
             <button onClick={() => setSearchOpen(true)} className="md:hidden w-9 h-9 glass rounded-full flex items-center justify-center text-white border border-white/10">
-              <FaSearch size={12} />
+              <AppIcon icon={Search01Icon} size={12} />
             </button>
 
             {/* Auth */}
@@ -100,16 +109,16 @@ export default function Navbar() {
                       </div>
                       <Link href="/profile" onClick={() => setMenuOpen(false)}
                         className="flex items-center gap-3 px-3 py-2 text-sm text-white hover:bg-white/5 rounded-xl transition-colors">
-                        <FaUser size={11} className="text-neutral-500" /> Profile
+                        <AppIcon icon={UserIcon} size={11} className="text-neutral-500" /> Profile
                       </Link>
                       <Link href="/my-list" onClick={() => setMenuOpen(false)}
                         className="flex items-center gap-3 px-3 py-2 text-sm text-white hover:bg-white/5 rounded-xl transition-colors">
-                        <FaHeart size={11} className="text-neutral-500" /> My List
+                        <AppIcon icon={FavouriteIcon} size={11} className="text-neutral-500" /> My List
                       </Link>
                       <div className="border-t border-white/8 mt-1 pt-1">
                         <button onClick={() => { setMenuOpen(false); dispatch(logoutUser()); }}
                           className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-400 hover:bg-red-500/8 rounded-xl transition-colors">
-                          <FaSignOutAlt size={11} /> Sign Out
+                          <AppIcon icon={Logout01Icon} size={11} /> Sign Out
                         </button>
                       </div>
                     </motion.div>
@@ -124,7 +133,7 @@ export default function Navbar() {
             )}
 
             <button onClick={() => setMobile((o) => !o)} className="md:hidden text-white p-2">
-              {mobileOpen ? <FaTimes size={18} /> : <FaBars size={18} />}
+              {mobileOpen ? <AppIcon icon={Cancel01Icon} size={18} /> : <AppIcon icon={Menu01Icon} size={18} />}
             </button>
           </div>
         </div>
@@ -155,7 +164,7 @@ export default function Navbar() {
             className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-2xl p-6 pt-20"
           >
             <button onClick={() => setSearchOpen(false)} className="absolute top-5 right-5 text-neutral-400 hover:text-white">
-              <FaTimes size={20} />
+              <AppIcon icon={Cancel01Icon} size={20} />
             </button>
             <SmartSearch fullscreen onClose={() => setSearchOpen(false)} />
           </motion.div>

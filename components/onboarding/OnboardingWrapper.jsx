@@ -10,15 +10,15 @@ export default function OnboardingWrapper({ onComplete }) {
     const [languages, setLanguages] = useState([]);
 
     // fetch location-based primary languages
-    const [primaryLangs, setPrimaryLangs] = useState(["English", "Hindi", "Telugu", "Tamil", "Kannada", "Malayalam"]);
+    const [primaryLangs, setPrimaryLangs] = useState(["en", "hi", "te", "ta", "kn", "ml"]);
 
     useEffect(() => {
         // location detection stub (replace with ipapi or server-side detection later)
         async function detect() {
             try {
                 const res = await fetch("https://ipapi.co/json").then(r => r.json()).catch(() => null);
-                if (res?.country === "US") setPrimaryLangs(["English", "Spanish", "French"]);
-                if (res?.country === "JP") setPrimaryLangs(["Japanese", "English"]);
+                if (res?.country === "US") setPrimaryLangs(["en", "es", "fr"]);
+                if (res?.country === "JP") setPrimaryLangs(["ja", "en"]);
                 // more rules as needed
             } catch { }
         }

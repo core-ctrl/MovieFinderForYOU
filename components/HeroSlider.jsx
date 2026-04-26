@@ -1,41 +1,24 @@
+// components/HeroSlider.jsx
 import { useState, useEffect, useRef, useCallback } from "react";
+import {
+    FavouriteIcon,
+    InformationCircleIcon,
+    NextIcon,
+    PauseIcon,
+    PlayIcon,
+    PlusSignIcon,
+    VolumeHighIcon,
+    VolumeMute02Icon,
+} from "@hugeicons/core-free-icons";
+import AppIcon from "./AppIcon";
+import useAdaptiveVideoQuality from "../hooks/useAdaptiveVideoQuality";
 
-/**
- * HeroSlider — Hybrid Cinematic (Netflix + AppleTV)
-<<<<<<< HEAD
- * FIXES:
- *  1. Removed internal nav links (duplicate of global Navbar)
- *  2. Fixed onPlayTrailer call signature to match _app.js openTrailer(key, title, id, type)
- *  3. Removed duplicate inline controls block
-=======
- *
- * - Ken Burns + parallax
- * - Dominant color -> accent glow
- * - Lazy YT API & inline trailer
- * - Glass info card
- * - Netflix-style top-left menu (moved to top-level so it's always visible)
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
- */
+const ROTATE_MS = 9000;
+const SKIP_SECS = 60;
+const SCALE = 1.125;
+const SATURATION = 2.0;
 
-const ROTATE_INTERVAL_MS = 9000;
-const SKIP_SECONDS = 60;
-const MOTION_SCALE = 1.125;
-const ACCENT_SATURATION = 2.0;
-
-export default function HeroSlider({
-    slides = [],
-<<<<<<< HEAD
-    onPlayTrailer,
-    wishlist = [],
-    addToWishlist,
-    openAuth,
-=======
-    onPlayTrailer,    // function from parent to open global trailer modal
-    wishlist = [],    // safe default so SSR won't crash
-    addToWishlist,    // function to add an item to wishlist
-    openAuth,         // function to open blur login modal
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
-}) {
+export default function HeroSlider({ slides = [], onPlayTrailer, wishlist = [], addToWishlist, openAuth }) {
     if (!slides || slides.length === 0) return null;
 
     const [index, setIndex] = useState(0);
@@ -47,65 +30,25 @@ export default function HeroSlider({
     const [isHovering, setIsHovering] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
     const [parallax, setParallax] = useState({ x: 0, y: 0 });
-    const [dominantRgb, setDominantRgb] = useState([200, 30, 30]);
+    const [dominant, setDominant] = useState([200, 30, 30]);
 
     const startX = useRef(null);
     const sectionRef = useRef(null);
-    const ytContainerRef = useRef(null);
-    const ytPlayerRef = useRef(null);
+    const ytContainer = useRef(null);
+    const ytPlayer = useRef(null);
     const rotateTimer = useRef(null);
-    const userInteracting = useRef(false);
-    const hasLoadedYTApi = useRef(false);
+    const interacting = useRef(false);
+    const ytApiLoaded = useRef(false);
+
+    const { vqParam, ytQuality } = useAdaptiveVideoQuality();
 
     const slide = slides[index];
-
-<<<<<<< HEAD
-    const isInList = Array.isArray(wishlist) && slide
-        ? wishlist.some((m) => m.id === slide.id)
-        : false;
-
-    const handleWishlist = (e) => {
-        e?.stopPropagation?.();
-        if (!addToWishlist) { if (openAuth) openAuth(); return; }
-        if ((!Array.isArray(wishlist) || wishlist.length === 0) && openAuth) { openAuth(); return; }
-=======
-    // safe check: ensure wishlist is an array before calling .some
     const isInList = Array.isArray(wishlist) && slide ? wishlist.some((m) => m.id === slide.id) : false;
-
-    const handleWishlist = (e) => {
-        e?.stopPropagation?.();
-
-        // if addToWishlist isn't provided, fallback to opening auth if available
-        if (!addToWishlist) {
-            if (openAuth) openAuth();
-            return;
-        }
-
-        // If user is not signed in (no wishlist), prompt login
-        if ((!Array.isArray(wishlist) || wishlist.length === 0) && openAuth) {
-            openAuth();
-            return;
-        }
-
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
-        addToWishlist(slide);
-    };
-
     const bgImage = slide?.backdrop_path || slide?.poster_path || "/fallback.jpg";
     const videoKey = slide?.trailerKey;
+    const bgUrl = (p) => p?.startsWith("http") ? p : `https://image.tmdb.org/t/p/original${p}`;
 
-<<<<<<< HEAD
-    const bgUrl = (path) =>
-        path && path.startsWith("http") ? path : `https://image.tmdb.org/t/p/original${path}`;
-
-    /* ── Dominant color ── */
-=======
-
-    const bgUrl = (path) =>
-        path && path.startsWith("http") ? path : `https://image.tmdb.org/t/p/original${path}`;
-
-    /* ------------------ Dominant color extraction ------------------ */
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
+    // ── Dominant colour ────────────────────────────────────────────
     useEffect(() => {
         const img = new Image();
         img.crossOrigin = "anonymous";
@@ -114,129 +57,76 @@ export default function HeroSlider({
             try {
                 const canvas = document.createElement("canvas");
                 const ctx = canvas.getContext("2d");
-<<<<<<< HEAD
-                const w = (canvas.width = 80), h = (canvas.height = 80);
-                ctx.drawImage(img, 0, 0, w, h);
-                const data = ctx.getImageData(0, 0, w, h).data;
+                canvas.width = canvas.height = 80;
+                ctx.drawImage(img, 0, 0, 80, 80);
+                const data = ctx.getImageData(0, 0, 80, 80).data;
                 let r = 0, g = 0, b = 0, count = 0;
-                for (let i = 0; i < data.length; i += 4 * 6) {
+                for (let i = 0; i < data.length; i += 24) {
                     r += data[i]; g += data[i + 1]; b += data[i + 2]; count++;
                 }
-                if (count > 0)
-                    setDominantRgb([Math.round(r / count), Math.round(g / count), Math.round(b / count)]);
-            } catch { }
+                if (count > 0) setDominant([Math.round(r / count), Math.round(g / count), Math.round(b / count)]);
+            } catch (e) { }
         };
     }, [bgImage]);
 
-    /* ── YT API ── */
-=======
-                const w = (canvas.width = 80);
-                const h = (canvas.height = 80);
-                ctx.drawImage(img, 0, 0, w, h);
-                const data = ctx.getImageData(0, 0, w, h).data;
-                let r = 0,
-                    g = 0,
-                    b = 0,
-                    count = 0;
-                for (let i = 0; i < data.length; i += 4 * 6) {
-                    r += data[i];
-                    g += data[i + 1];
-                    b += data[i + 2];
-                    count++;
-                }
-                if (count > 0) {
-                    setDominantRgb([Math.round(r / count), Math.round(g / count), Math.round(b / count)]);
-                }
-            } catch {
-                // cross-origin or other failure — ignore
-            }
-        };
-    }, [bgImage]);
-
-    /* ------------------ YT API lazy loader ------------------ */
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
-    const ensureYouTubeAPI = useCallback(() => {
+    // ── YouTube API loader ─────────────────────────────────────────
+    const ensureYTApi = useCallback(() => {
         if (typeof window === "undefined") return Promise.resolve();
-        if (window.YT && window.YT.Player) return Promise.resolve();
-        if (hasLoadedYTApi.current)
-            return new Promise((res) => {
-                const check = setInterval(() => {
-<<<<<<< HEAD
-                    if (window.YT && window.YT.Player) { clearInterval(check); res(); }
-                }, 100);
-            });
+        if (window.YT?.Player) return Promise.resolve();
         return new Promise((resolve) => {
-            hasLoadedYTApi.current = true;
-            if (!document.getElementById("youtube-iframe-api")) {
-=======
-                    if (window.YT && window.YT.Player) {
-                        clearInterval(check);
-                        res();
-                    }
-                }, 100);
-            });
-
-        return new Promise((resolve) => {
-            hasLoadedYTApi.current = true;
-            const existing = document.getElementById("youtube-iframe-api");
-            if (!existing) {
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
-                const tag = document.createElement("script");
-                tag.src = "https://www.youtube.com/iframe_api";
-                tag.id = "youtube-iframe-api";
-                document.body.appendChild(tag);
+            if (!ytApiLoaded.current) {
+                ytApiLoaded.current = true;
+                if (!document.getElementById("yt-api")) {
+                    const tag = document.createElement("script");
+                    tag.src = "https://www.youtube.com/iframe_api";
+                    tag.id = "yt-api";
+                    document.body.appendChild(tag);
+                }
             }
             const check = setInterval(() => {
-<<<<<<< HEAD
-                if (window.YT && window.YT.Player) { clearInterval(check); resolve(); }
-=======
-                if (window.YT && window.YT.Player) {
-                    clearInterval(check);
-                    resolve();
-                }
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
+                if (window.YT?.Player) { clearInterval(check); resolve(); }
             }, 100);
         });
     }, []);
 
-<<<<<<< HEAD
-    /* ── Create/update inline player ── */
-    const createOrUpdatePlayer = useCallback(async (videoId) => {
+    // ── Create / update inline player ─────────────────────────────
+    const createPlayer = useCallback(async (videoId) => {
         if (!videoId) return;
-        await ensureYouTubeAPI();
+        await ensureYTApi();
 
-        if (ytPlayerRef.current) {
+        if (ytPlayer.current) {
             try {
-                ytPlayerRef.current.loadVideoById(videoId);
-                ytPlayerRef.current.setVolume(volume);
-                muted ? ytPlayerRef.current.mute() : ytPlayerRef.current.unMute();
-            } catch { }
+                ytPlayer.current.loadVideoById(videoId);
+                ytPlayer.current.setVolume(volume);
+                muted ? ytPlayer.current.mute() : ytPlayer.current.unMute();
+            } catch (e) { }
             return;
         }
 
-        const containerId = `ytp-${Date.now()}`;
-        if (!ytContainerRef.current) return;
-        ytContainerRef.current.innerHTML = `<div id="${containerId}"></div>`;
+        const id = `ytp-${Date.now()}`;
+        if (!ytContainer.current) return;
+        ytContainer.current.innerHTML = `<div id="${id}"></div>`;
 
-        ytPlayerRef.current = new window.YT.Player(containerId, {
+        ytPlayer.current = new window.YT.Player(id, {
             videoId,
-            playerVars: { autoplay: 1, controls: 0, modestbranding: 1, rel: 0, loop: 1, playlist: videoId, playsinline: 1 },
+            playerVars: { autoplay: 1, controls: 0, modestbranding: 1, rel: 0, loop: 1, playlist: videoId, playsinline: 1, vq: vqParam, iv_load_policy: 3 },
             events: {
                 onReady: (e) => {
                     try {
                         e.target.setVolume(volume);
                         muted ? e.target.mute() : e.target.unMute();
-                    } catch { }
+                        e.target.setPlaybackQuality(ytQuality);
+                    } catch (e) { }
                 },
-                onStateChange: (event) => {
-                    if (event.data === window.YT.PlayerState.PLAYING) {
+                onStateChange: (e) => {
+                    if (e.data === window.YT.PlayerState.PLAYING) {
                         setIsPlaying(true);
                         if (!muted) {
                             let v = volume;
-                            const fadeIn = setInterval(() => {
+                            const fade = setInterval(() => {
                                 v = Math.min(100, v + 4);
-                                try { ytPlayerRef.current.setVolume(v); } catch { }
-                                if (v >= volume) clearInterval(fadeIn);
+                                try { ytPlayer.current.setVolume(v); } catch (e) { }
+                                if (v >= volume) clearInterval(fade);
                             }, 120);
                         }
                     } else {
@@ -245,122 +135,34 @@ export default function HeroSlider({
                 },
             },
         });
-    }, [ensureYouTubeAPI, muted, volume]);
-=======
-    /* ------------------ Create / update player ------------------ */
-    const createOrUpdatePlayer = useCallback(
-        async (videoId) => {
-            if (!videoId) return;
-            await ensureYouTubeAPI();
-
-            if (ytPlayerRef.current) {
-                try {
-                    ytPlayerRef.current.loadVideoById(videoId);
-                    ytPlayerRef.current.setVolume(volume);
-                    muted ? ytPlayerRef.current.mute() : ytPlayerRef.current.unMute();
-                } catch { }
-                return;
-            }
-
-            const containerId = `ytp-${Date.now()}`;
-            if (!ytContainerRef.current) return;
-            ytContainerRef.current.innerHTML = `<div id="${containerId}"></div>`;
-
-            ytPlayerRef.current = new window.YT.Player(containerId, {
-                videoId,
-                playerVars: {
-                    autoplay: 1,
-                    controls: 0,
-                    modestbranding: 1,
-                    rel: 0,
-                    loop: 1,
-                    playlist: videoId,
-                    playsinline: 1,
-                },
-                events: {
-                    onReady: (e) => {
-                        try {
-                            e.target.setVolume(volume);
-                            muted ? e.target.mute() : e.target.unMute();
-                        } catch { }
-                    },
-                    onStateChange: (event) => {
-                        if (event.data === window.YT.PlayerState.PLAYING) {
-                            setIsPlaying(true);
-                            // gentle fade-in if unmuted
-                            let v = muted ? 0 : volume;
-                            if (!muted) {
-                                const fadeIn = setInterval(() => {
-                                    v = Math.min(100, v + 4);
-                                    try {
-                                        ytPlayerRef.current.setVolume(v);
-                                    } catch { }
-                                    if (v >= volume) clearInterval(fadeIn);
-                                }, 120);
-                            }
-                        } else {
-                            setIsPlaying(false);
-                        }
-                    },
-                },
-            });
-        },
-        [ensureYouTubeAPI, muted, volume]
-    );
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
+    }, [ensureYTApi, muted, volume]);
 
     useEffect(() => {
         if (!videoKey) {
-            if (ytContainerRef.current) ytContainerRef.current.innerHTML = "";
-            if (ytPlayerRef.current) {
-<<<<<<< HEAD
-                try { ytPlayerRef.current.destroy(); } catch { }
-=======
-                try {
-                    ytPlayerRef.current.destroy();
-                } catch { }
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
-                ytPlayerRef.current = null;
-            }
+            if (ytContainer.current) ytContainer.current.innerHTML = "";
+            if (ytPlayer.current) { try { ytPlayer.current.destroy(); } catch (e) { } ytPlayer.current = null; }
             return;
         }
-        if (showVideo) createOrUpdatePlayer(videoKey);
-    }, [videoKey, showVideo, createOrUpdatePlayer]);
+        if (showVideo) createPlayer(videoKey);
+    }, [videoKey, showVideo, createPlayer]);
 
     useEffect(() => {
-        if (!ytPlayerRef.current) return;
-        try {
-            muted ? ytPlayerRef.current.mute() : ytPlayerRef.current.unMute();
-            ytPlayerRef.current.setVolume(volume);
-        } catch { }
+        if (!ytPlayer.current) return;
+        try { muted ? ytPlayer.current.mute() : ytPlayer.current.unMute(); ytPlayer.current.setVolume(volume); } catch (e) { }
     }, [muted, volume]);
 
-<<<<<<< HEAD
-    /* ── Parallax ── */
-=======
-    /* ------------------ Parallax ------------------ */
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
+    // ── Parallax ───────────────────────────────────────────────────
     useEffect(() => {
-        const handleMove = (e) => {
+        const fn = (e) => {
             if (!sectionRef.current) return;
             const rect = sectionRef.current.getBoundingClientRect();
-<<<<<<< HEAD
-            setParallax({
-                x: (e.clientX - rect.left) / rect.width - 0.5,
-                y: (e.clientY - rect.top) / rect.height - 0.5,
-            });
-=======
-            const x = (e.clientX - rect.left) / rect.width - 0.5;
-            const y = (e.clientY - rect.top) / rect.height - 0.5;
-            setParallax({ x, y });
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
+            setParallax({ x: (e.clientX - rect.left) / rect.width - 0.5, y: (e.clientY - rect.top) / rect.height - 0.5 });
         };
-        window.addEventListener("mousemove", handleMove);
-        return () => window.removeEventListener("mousemove", handleMove);
+        window.addEventListener("mousemove", fn);
+        return () => window.removeEventListener("mousemove", fn);
     }, []);
 
-<<<<<<< HEAD
-    /* ── Timings ── */
+    // ── Slide timings ──────────────────────────────────────────────
     useEffect(() => {
         setShowInfo(true); setShowVideo(false); setZoom(false);
         const t1 = setTimeout(() => setShowInfo(false), 3000);
@@ -369,103 +171,47 @@ export default function HeroSlider({
         return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
     }, [index]);
 
-    /* ── Swipe ── */
-=======
-    /* ------------------ Timings ------------------ */
+    // ── Auto-rotate ────────────────────────────────────────────────
     useEffect(() => {
-        setShowInfo(true);
-        setShowVideo(false);
-        setZoom(false);
-
-        const t1 = setTimeout(() => setShowInfo(false), 3000);
-        const t2 = setTimeout(() => setShowVideo(true), 4200);
-        const t3 = setTimeout(() => setZoom(true), 900);
-        return () => {
-            clearTimeout(t1);
-            clearTimeout(t2);
-            clearTimeout(t3);
-        };
-    }, [index]);
-
-    /* ------------------ Swipe ------------------ */
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
-    const handleTouchStart = (e) => (startX.current = e.touches[0].clientX);
-    const handleTouchEnd = (e) => {
-        if (!startX.current) return;
-        const diff = startX.current - e.changedTouches[0].clientX;
-        if (diff > 50) setIndex((i) => (i + 1) % slides.length);
-        if (diff < -50) setIndex((i) => (i - 1 + slides.length) % slides.length);
-    };
-
-<<<<<<< HEAD
-    /* ── Auto rotate ── */
-    useEffect(() => {
-        const shouldRotate = !isHovering && !userInteracting.current && !isPlaying;
-        if (!shouldRotate) { if (rotateTimer.current) clearTimeout(rotateTimer.current); return; }
-=======
-    /* ------------------ Auto rotate ------------------ */
-    useEffect(() => {
-        const shouldRotate = !isHovering && !userInteracting.current && !isPlaying;
-        if (!shouldRotate) {
-            if (rotateTimer.current) clearTimeout(rotateTimer.current);
-            return;
-        }
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
-        rotateTimer.current = setTimeout(() => setIndex((i) => (i + 1) % slides.length), ROTATE_INTERVAL_MS);
+        if (isHovering || interacting.current || isPlaying) { clearTimeout(rotateTimer.current); return; }
+        rotateTimer.current = setTimeout(() => setIndex((i) => (i + 1) % slides.length), ROTATE_MS);
         return () => clearTimeout(rotateTimer.current);
     }, [index, isHovering, isPlaying, slides.length]);
 
-<<<<<<< HEAD
-    /* ── Controls ── */
-=======
-    /* ------------------ Controls ------------------ */
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
+    // ── Swipe ──────────────────────────────────────────────────────
+    const onTouchStart = (e) => (startX.current = e.touches[0].clientX);
+    const onTouchEnd = (e) => {
+        if (!startX.current) return;
+        const d = startX.current - e.changedTouches[0].clientX;
+        if (d > 50) setIndex((i) => (i + 1) % slides.length);
+        if (d < -50) setIndex((i) => (i - 1 + slides.length) % slides.length);
+    };
+
+    // ── Controls ───────────────────────────────────────────────────
     const handlePlayClick = async () => {
-        userInteracting.current = true;
+        interacting.current = true;
         setShowVideo(true);
-        await ensureYouTubeAPI();
-        createOrUpdatePlayer(videoKey);
-<<<<<<< HEAD
-        setTimeout(() => { try { ytPlayerRef.current.playVideo(); } catch { } }, 300);
-=======
-        setTimeout(() => {
-            try {
-                ytPlayerRef.current.playVideo();
-            } catch { }
-        }, 300);
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
+        await ensureYTApi();
+        createPlayer(videoKey);
+        setTimeout(() => { try { ytPlayer.current.playVideo(); } catch (e) { } }, 300);
     };
 
     const handlePlayPause = () => {
-        if (!ytPlayerRef.current) return;
+        if (!ytPlayer.current) return;
         try {
-            const s = ytPlayerRef.current.getPlayerState();
-<<<<<<< HEAD
-            s === window.YT.PlayerState.PLAYING
-                ? ytPlayerRef.current.pauseVideo()
-                : ytPlayerRef.current.playVideo();
-=======
-            s === window.YT.PlayerState.PLAYING ? ytPlayerRef.current.pauseVideo() : ytPlayerRef.current.playVideo();
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
-        } catch { }
+            const s = ytPlayer.current.getPlayerState();
+            s === window.YT.PlayerState.PLAYING ? ytPlayer.current.pauseVideo() : ytPlayer.current.playVideo();
+        } catch (e) { }
     };
 
     const handleSkipIntro = () => {
-        if (!ytPlayerRef.current) return;
-        try {
-            ytPlayerRef.current.seekTo((ytPlayerRef.current.getCurrentTime() || 0) + SKIP_SECONDS, true);
-        } catch { }
+        if (!ytPlayer.current) return;
+        try { ytPlayer.current.seekTo((ytPlayer.current.getCurrentTime() || 0) + SKIP_SECS, true); } catch (e) { }
     };
 
-<<<<<<< HEAD
-    /* ─────────────────────────────────────────────────────────
-       FIX #2: Hero "Play" button now calls openTrailer with the
-       correct positional signature: (key, title, id, type)
-       instead of passing an object {provider, id, title}
-    ───────────────────────────────────────────────────────── */
+    // ── Hero trailer button — correct signature: (key, title, id, type)
     const handleHeroTrailer = () => {
         if (slide?.trailerKey) {
-            // Correct: openTrailer(key, title, id, type)
             onPlayTrailer(
                 slide.trailerKey,
                 slide.title || slide.name,
@@ -473,49 +219,29 @@ export default function HeroSlider({
                 slide.media_type || (slide.title ? "movie" : "tv")
             );
         } else {
-            // No trailer key — play inline background video instead
             handlePlayClick();
         }
     };
 
-    /* ── Color helpers ── */
-    function saturateColor([r, g, b], factor = 1.0) {
+    const handleWishlist = (e) => {
+        e?.stopPropagation?.();
+        if (!addToWishlist) { openAuth?.(); return; }
+        addToWishlist(slide);
+    };
+
+    // ── Colour helpers ─────────────────────────────────────────────
+    function saturate([r, g, b], f) {
         r /= 255; g /= 255; b /= 255;
-        const max = Math.max(r, g, b), min = Math.min(r, g, b);
-        const l = (max + min) / 2;
-        let s = 0;
-        if (max !== min)
-            s = l > 0.5 ? (max - min) / (2 - max - min) : (max - min) / (max + min);
-        s = Math.min(1, s * factor);
-=======
-    /* ------------------ Visual helpers ------------------ */
-    function saturateColor([r, g, b], factor = 1.0) {
-        r /= 255;
-        g /= 255;
-        b /= 255;
-        const max = Math.max(r, g, b),
-            min = Math.min(r, g, b);
-        const l = (max + min) / 2;
-
-        let s = 0;
-        if (max !== min) {
-            s = l > 0.5 ? (max - min) / (2 - max - min) : (max - min) / (max + min);
-        }
-        s = Math.min(1, s * factor);
-
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
+        const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+        const l = (mx + mn) / 2;
+        let s = mx === mn ? 0 : l > 0.5 ? (mx - mn) / (2 - mx - mn) : (mx - mn) / (mx + mn);
+        s = Math.min(1, s * f);
         let h = 0;
-        if (max === r) h = (g - b) / (max - min);
-        else if (max === g) h = 2 + (b - r) / (max - min);
-        else h = 4 + (r - g) / (max - min);
-<<<<<<< HEAD
-        h *= 60; if (h < 0) h += 360;
-=======
-        h *= 60;
-        if (h < 0) h += 360;
-
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
-        function hslToRgb(h, s, l) {
+        if (mx === r) h = (g - b) / (mx - mn);
+        else if (mx === g) h = 2 + (b - r) / (mx - mn);
+        else h = 4 + (r - g) / (mx - mn);
+        h = (h * 60 + 360) % 360;
+        const hsl2rgb = (h, s, l) => {
             const c = (1 - Math.abs(2 * l - 1)) * s;
             const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
             const m = l - c / 2;
@@ -527,134 +253,69 @@ export default function HeroSlider({
             else if (h < 300) [rr, gg, bb] = [x, 0, c];
             else[rr, gg, bb] = [c, 0, x];
             return [Math.round((rr + m) * 255), Math.round((gg + m) * 255), Math.round((bb + m) * 255)];
-        }
-<<<<<<< HEAD
-=======
-
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
-        return hslToRgb(h, s, l);
+        };
+        return hsl2rgb(h, s, l);
     }
 
-    const saturated = saturateColor(dominantRgb, ACCENT_SATURATION);
-    const accent = `rgba(${saturated[0]}, ${saturated[1]}, ${saturated[2]}, 0.86)`;
-    const accentLight = `rgba(${saturated[0]}, ${saturated[1]}, ${saturated[2]}, 0.22)`;
-    const accentText = (saturated[0] * 0.299 + saturated[1] * 0.587 + saturated[2] * 0.114) > 186 ? "#000" : "#fff";
+    const sat = saturate(dominant, SATURATION);
+    const accent = `rgba(${sat[0]},${sat[1]},${sat[2]},0.86)`;
+    const accentLt = `rgba(${sat[0]},${sat[1]},${sat[2]},0.22)`;
+    const accentTxt = (sat[0] * 0.299 + sat[1] * 0.587 + sat[2] * 0.114) > 186 ? "#000" : "#fff";
 
-    const enhanceOverview = (text) => {
-        if (!text) return "";
-        if (text.length < 200) return text;
-        const snippet = text.slice(0, 220);
-        const last = Math.max(snippet.lastIndexOf(". "), snippet.lastIndexOf("! "), snippet.lastIndexOf("? "));
-        if (last > 60) return snippet.slice(0, last + 1);
-        return snippet.slice(0, 180).replace(/\s+\S*$/, "") + "…";
+    const trimOverview = (t) => {
+        if (!t || t.length < 200) return t;
+        const s = t.slice(0, 220);
+        const i = Math.max(s.lastIndexOf(". "), s.lastIndexOf("! "), s.lastIndexOf("? "));
+        return i > 60 ? s.slice(0, i + 1) : s.slice(0, 180).replace(/\s+\S*$/, "") + "…";
     };
 
-<<<<<<< HEAD
-=======
-    /* ------------------ JSX ------------------ */
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
+    // ── JSX ────────────────────────────────────────────────────────
     return (
         <section
             ref={sectionRef}
             className="relative top-0 w-full h-[100vh] overflow-hidden bg-black select-none"
-<<<<<<< HEAD
-            onTouchStart={(e) => { userInteracting.current = true; handleTouchStart(e); }}
-            onTouchEnd={(e) => { handleTouchEnd(e); userInteracting.current = false; }}
-            onMouseEnter={() => { setIsHovering(true); userInteracting.current = true; }}
-            onMouseLeave={() => { setIsHovering(false); userInteracting.current = false; }}
+            onTouchStart={(e) => { interacting.current = true; onTouchStart(e); }}
+            onTouchEnd={(e) => { onTouchEnd(e); interacting.current = false; }}
+            onMouseEnter={() => { setIsHovering(true); interacting.current = true; }}
+            onMouseLeave={() => { setIsHovering(false); interacting.current = false; }}
             aria-roledescription="carousel"
         >
-            {/* film grain */}
+            {/* Film grain */}
             <div aria-hidden className="pointer-events-none absolute inset-0 z-50"
-                style={{
-                    backgroundImage: "url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22160%22 height=%22100%22><filter id=%22n%22><feTurbulence baseFrequency=%220.9%22 numOctaves=%221%22 stitchTiles=%22stitch%22/></filter><rect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22 opacity=%220.03%22/></svg>')",
-=======
-            onTouchStart={(e) => {
-                userInteracting.current = true;
-                handleTouchStart(e);
-            }}
-            onTouchEnd={(e) => {
-                handleTouchEnd(e);
-                userInteracting.current = false;
-            }}
-            onMouseEnter={() => {
-                setIsHovering(true);
-                userInteracting.current = true;
-            }}
-            onMouseLeave={() => {
-                setIsHovering(false);
-                userInteracting.current = false;
-            }}
-            aria-roledescription="carousel"
-        >
-            {/* subtle film grain overlay */}
-            <div
-                aria-hidden
-                className="pointer-events-none absolute inset-0 z-50"
-                style={{
-                    backgroundImage:
-                        "url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22160%22 height=%22100%22><filter id=%22n%22><feTurbulence baseFrequency=%220.9%22 numOctaves=%221%22 stitchTiles=%22stitch%22/></filter><rect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22 opacity=%220.03%22/></svg>')",
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
-                    mixBlendMode: "overlay",
-                }}
+                style={{ backgroundImage: "url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22160%22 height=%22100%22><filter id=%22n%22><feTurbulence baseFrequency=%220.9%22 numOctaves=%221%22 stitchTiles=%22stitch%22/></filter><rect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22 opacity=%220.03%22/></svg>')", mixBlendMode: "overlay" }}
             />
 
-            {/* dust particles */}
+            {/* Dust particles */}
             <div className="pointer-events-none z-40 absolute inset-0">
-                <div className="absolute w-px h-px bg-white/8 rounded-full animate-dust" style={{ left: "18%", top: "22%", animationDelay: "0s" }} />
-                <div className="absolute w-px h-px bg-white/9 rounded-full animate-dust" style={{ left: "40%", top: "55%", animationDelay: "0.6s" }} />
-                <div className="absolute w-px h-px bg-white/7 rounded-full animate-dust" style={{ left: "78%", top: "35%", animationDelay: "1.1s" }} />
+                {[{ l: "18%", t: "22%", d: "0s" }, { l: "40%", t: "55%", d: "0.6s" }, { l: "78%", t: "35%", d: "1.1s" }].map((p, i) => (
+                    <div key={i} className="absolute w-px h-px bg-white/8 rounded-full animate-dust" style={{ left: p.l, top: p.t, animationDelay: p.d }} />
+                ))}
             </div>
 
-<<<<<<< HEAD
-            {/* cinematic bars */}
+            {/* Cinematic bars */}
             <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/85 to-transparent z-30" />
             <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/85 to-transparent z-30" />
 
-            {/* background image */}
-=======
-            {/* top & bottom cinematic bars */}
-            <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/85 to-transparent z-30" />
-            <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/85 to-transparent z-30" />
-
-            {/* background image (Ken Burns + parallax) */}
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
+            {/* Background image */}
             <img
                 src={bgUrl(bgImage)}
-                alt={slide?.title || slide?.name || "hero background"}
-                className={`absolute inset-0 w-full h-full object-cover transition-transform duration-[2200ms] will-change-transform ${zoom ? `scale-[${MOTION_SCALE}]` : "scale-[1.03]"}`}
+                alt={slide?.title || slide?.name || "hero"}
+                className={`absolute inset-0 w-full h-full object-cover transition-transform duration-[2200ms] will-change-transform ${zoom ? `scale-[${SCALE}]` : "scale-[1.03]"}`}
                 style={{
                     transform: `perspective(1200px) translateX(${parallax.x * -16}px) translateY(${parallax.y * -10}px) rotateY(${parallax.x * 3}deg) rotateX(${parallax.y * -2.8}deg)`,
                     transitionTimingFunction: "cubic-bezier(.2,.9,.2,1)",
                 }}
             />
 
-<<<<<<< HEAD
-            {/* YT inline player */}
-=======
-            {/* YouTube player container (fills) */}
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
+            {/* YouTube inline player */}
             <div
-                ref={ytContainerRef}
+                ref={ytContainer}
                 className="absolute inset-0 w-full h-full pointer-events-none transition-opacity duration-[800ms] [&_iframe]:w-full [&_iframe]:h-full [&_iframe]:absolute [&_iframe]:top-0 [&_iframe]:left-0"
-                style={{
-                    opacity: showVideo ? 1 : 0,
-                    transform: `translateX(${parallax.x * -5}px) translateY(${parallax.y * -3}px)`,
-                    willChange: "transform, opacity",
-                }}
+                style={{ opacity: showVideo ? 1 : 0, transform: `translateX(${parallax.x * -5}px) translateY(${parallax.y * -3}px)` }}
                 aria-hidden={!showVideo}
             />
 
-<<<<<<< HEAD
-            {/* ─────────────────────────────────────────────────────────
-                FIX #1: REMOVED the duplicate nav block that was here.
-                Navigation is handled globally by Navbar in _app.js.
-            ───────────────────────────────────────────────────────── */}
-=======
-
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
-
-            {/* glass info card */}
+            {/* Glass info card */}
             <div className="absolute inset-0 z-40 flex items-end md:items-center px-6 md:px-12 pb-10 md:pb-16 pointer-events-none">
                 <div
                     className={`max-w-4xl w-full transition-all duration-700 ${showInfo ? "opacity-100" : "opacity-0 pointer-events-none"}`}
@@ -663,308 +324,117 @@ export default function HeroSlider({
                         pointerEvents: "auto",
                     }}
                 >
-                    <div style={{ position: "relative" }}>
-                        <h1 className="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-3 drop-shadow-lg">
-                            <span style={{ position: "relative", zIndex: 3 }}>{slide?.title || slide?.name}</span>
+                    {/* Title */}
+                    <div className="relative mb-4">
+                        <h1 className="text-4xl md:text-6xl font-extrabold text-white leading-tight drop-shadow-lg" style={{ position: "relative", zIndex: 3 }}>
+                            {slide?.title || slide?.name}
                         </h1>
-<<<<<<< HEAD
-                        <div aria-hidden style={{
-                            position: "absolute", left: 0, top: "6px", width: "80%", height: "36px",
-                            filter: "blur(28px)", background: `linear-gradient(90deg, ${accent}, ${accentLight})`,
-                            opacity: 0.22, zIndex: 2, borderRadius: 8, pointerEvents: "none",
-                        }} />
+                        <div aria-hidden style={{ position: "absolute", left: 0, top: "6px", width: "80%", height: "36px", filter: "blur(28px)", background: `linear-gradient(90deg,${accent},${accentLt})`, opacity: 0.22, zIndex: 2, borderRadius: 8, pointerEvents: "none" }} />
                     </div>
 
-                    <div className="mt-4 p-4 md:p-6 rounded-2xl" style={{
-                        background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)",
-                        backdropFilter: "blur(8px) saturate(120%)", boxShadow: "0 8px 30px rgba(0,0,0,0.6)",
-                    }}>
+                    {/* Overview */}
+                    <p className="text-gray-200 md:text-lg mb-5" style={{ maxWidth: "65ch" }}>{trimOverview(slide?.overview)}</p>
+
+                    {/* Card */}
+                    <div className="p-4 md:p-5 rounded-2xl mb-5 flex flex-wrap gap-2 items-center"
+                        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(8px)", boxShadow: "0 8px 30px rgba(0,0,0,0.6)" }}>
                         <button onClick={handleWishlist}
-                            className="bg-neutral-700/40 text-white px-5 py-3 rounded-lg font-semibold border border-white/10 hover:bg-white/10 transition">
-=======
-
-                        <div
-                            aria-hidden
-                            style={{
-                                position: "absolute",
-                                left: 0,
-                                top: "6px",
-                                width: "80%",
-                                height: "36px",
-                                filter: "blur(28px)",
-                                background: `linear-gradient(90deg, ${accent}, ${accentLight})`,
-                                opacity: 0.22,
-                                zIndex: 2,
-                                borderRadius: 8,
-                                pointerEvents: "none",
-                            }}
-                        />
-                    </div>
-
-                    <div
-                        className="mt-4 p-4 md:p-6 rounded-2xl"
-                        style={{
-                            background: "rgba(255,255,255,0.04)",
-                            border: "1px solid rgba(255,255,255,0.06)",
-                            backdropFilter: "blur(8px) saturate(120%)",
-                            boxShadow: "0 8px 30px rgba(0,0,0,0.6)",
-                        }}
-                    >
-                        <button
-                            onClick={handleWishlist}
-                            className="bg-neutral-700/40 text-white px-5 py-3 rounded-lg font-semibold border border-white/10 hover:bg-white/10 transition"
-                        >
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
-                            {isInList ? "❤️ In My List" : "🤍 Add to My List"}
+                            className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-neutral-700/40 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10">
+                            {isInList ? <AppIcon icon={FavouriteIcon} size={16} className="fill-current" /> : <AppIcon icon={PlusSignIcon} size={16} />}
+                            {isInList ? "In My List" : "Add to List"}
                         </button>
-
-                        {(slide?.genres || []).slice(0, 6).map((g, i) => (
+                        {(slide?.genres || []).slice(0, 5).map((g, i) => (
                             <span key={i} className="text-xs px-3 py-1 rounded-full bg-white/6 border border-white/8 text-white">
                                 {typeof g === "string" ? g : g.name}
                             </span>
                         ))}
-
-                        {(slide?.providers || []).slice(0, 3).map((p, i) => (
-<<<<<<< HEAD
-                            <button key={i} onClick={() => p?.url && window.open(p.url, "_blank")}
-                                className="text-xs px-2 py-1 rounded bg-white/6 border border-white/8 text-white flex items-center gap-2">
-=======
-                            <button
-                                key={i}
-                                onClick={() => p?.url && window.open(p.url, "_blank")}
-                                className="text-xs px-2 py-1 rounded bg-white/6 border border-white/8 text-white flex items-center gap-2"
-                            >
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
-                                {p?.logo ? <img src={p.logo} alt={p.name} className="w-6 h-3 object-contain" /> : p.name}
-                            </button>
-                        ))}
                     </div>
 
-                    <p className="text-gray-200 md:text-lg mb-4" style={{ maxWidth: "65ch" }}>
-                        {enhanceOverview(slide?.overview)}
-                    </p>
-
-<<<<<<< HEAD
-                    {/* FIX #2 applied here — uses handleHeroTrailer */}
-                    <button
-                        onClick={handleHeroTrailer}
-                        className="px-6 py-3 rounded-lg font-bold text-lg flex items-center gap-3"
-                        style={{ background: `linear-gradient(90deg, ${accent}, rgba(255,255,255,0.06))`, color: accentText }}
-=======
-                    <button
-                        onClick={() => {
-                            if (slide?.trailerKey) {
-                                onPlayTrailer({
-                                    provider: "youtube",
-                                    id: slide.trailerKey,
-                                    title: slide.title || slide.name,
-                                });
-                            } else {
-                                handlePlayClick(); // fallback inline autoplay
-                            }
-                        }}
-                        className="px-6 py-3 rounded-lg font-bold text-lg flex items-center gap-3"
-                        style={{
-                            background: `linear-gradient(90deg, ${accent}, rgba(255,255,255,0.06))`,
-                            color: accentText,
-                        }}
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
-                    >
-                        ▶ Play
-                    </button>
-
-<<<<<<< HEAD
-                    <button onClick={() => setShowInfo((s) => !s)}
-                        className="bg-neutral-700/40 text-white px-5 py-3 rounded-lg font-semibold border border-white/6">
-                        ⓘ More Info
-                    </button>
-
-                    <button onClick={handleSkipIntro}
-                        className="bg-black/60 text-white px-4 py-2 rounded-md text-sm border border-white/10">
-=======
-
-                    <button onClick={() => setShowInfo((s) => !s)} className="bg-neutral-700/40 text-white px-5 py-3 rounded-lg font-semibold border border-white/6">
-                        ⓘ More Info
-                    </button>
-
-                    <button onClick={handleSkipIntro} className="bg-black/60 text-white px-4 py-2 rounded-md text-sm border border-white/10">
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
-                        ⏭ Skip Intro
-                    </button>
-
-                    <div className="ml-auto flex items-center gap-3">
-<<<<<<< HEAD
-                        <button onClick={() => setMuted((m) => !m)}
-                            className="bg-black/50 border border-white/6 text-white px-3 py-2 rounded-md">
-                            {muted ? "🔇" : "🔊"}
-                        </button>
-                        <input aria-label="Volume"
-                            onChange={(e) => {
-                                const v = Number(e.target.value);
-                                setVolume(v); setMuted(v === 0);
-                                try { if (ytPlayerRef.current) ytPlayerRef.current.setVolume(v); } catch { }
-                            }}
-                            value={volume} type="range" min="0" max="100" className="h-1 w-36"
-=======
-                        <button onClick={() => setMuted((m) => !m)} className="bg-black/50 border border-white/6 text-white px-3 py-2 rounded-md">
-                            {muted ? "🔇" : "🔊"}
+                    {/* Buttons row */}
+                    <div className="flex flex-wrap items-center gap-3">
+                        {/* Play Trailer — correct signature */}
+                        <button
+                            onClick={handleHeroTrailer}
+                            className="flex items-center gap-2 rounded-lg px-6 py-3 text-lg font-bold"
+                            style={{ background: `linear-gradient(90deg,${accent},rgba(255,255,255,0.06))`, color: accentTxt }}
+                        >
+                            <AppIcon icon={PlayIcon} size={18} className="fill-current" />
+                            Play Trailer
                         </button>
 
-                        <input
-                            aria-label="Volume"
-                            onChange={(e) => {
-                                const v = Number(e.target.value);
-                                setVolume(v);
-                                setMuted(v === 0);
-                                try {
-                                    if (ytPlayerRef.current) ytPlayerRef.current.setVolume(v);
-                                } catch { }
-                            }}
-                            value={volume}
-                            type="range"
-                            min="0"
-                            max="100"
-                            className="h-1 w-36"
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
-                        />
+                        <button onClick={() => setShowInfo((s) => !s)}
+                            className="inline-flex items-center gap-2 rounded-lg border border-white/6 bg-neutral-700/40 px-5 py-3 font-semibold text-white">
+                            <AppIcon icon={InformationCircleIcon} size={18} />
+                            Info
+                        </button>
+
+                        <button onClick={handleSkipIntro}
+                            className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-black/60 px-4 py-2 text-sm text-white">
+                            <AppIcon icon={NextIcon} size={16} />
+                            Skip
+                        </button>
+
+                        <div className="ml-auto flex items-center gap-3">
+                            <button onClick={() => setMuted((m) => !m)}
+                                className="rounded-md border border-white/6 bg-black/50 px-3 py-2 text-white">
+                                {muted ? <AppIcon icon={VolumeMute02Icon} size={16} /> : <AppIcon icon={VolumeHighIcon} size={16} />}
+                            </button>
+                            <input
+                                aria-label="Volume"
+                                type="range" min="0" max="100"
+                                value={volume}
+                                onChange={(e) => {
+                                    const v = Number(e.target.value);
+                                    setVolume(v); setMuted(v === 0);
+                                    try { if (ytPlayer.current) ytPlayer.current.setVolume(v); } catch (e) { }
+                                }}
+                                className="h-1 w-28 md:w-36"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
 
-<<<<<<< HEAD
-            {/* inline playback controls — only shown when bg video is active */}
+            {/* Playback controls (bg video) */}
             {videoKey && showVideo && (
                 <div className="absolute bottom-6 left-6 z-50 flex items-center gap-3">
-                    <button onClick={handlePlayPause}
-                        className="bg-black/60 border border-white/10 text-white px-4 py-2 rounded-xl">⏯</button>
-                    <button onClick={() => setIndex((i) => (i + 1) % slides.length)}
-                        className="bg-black/60 border border-white/10 text-white px-4 py-2 rounded-xl">➜</button>
-                </div>
-            )}
-
-            {/* slide dots */}
-            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-[90] flex items-center gap-3">
-                {slides.map((s, i) => {
-                    const active = i === index;
-                    return (
-                        <button key={i} onClick={() => setIndex(i)}
-                            aria-label={`Go to slide ${i + 1}: ${s?.title || s?.name || ""}`}
-                            className={`relative rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/30 ${active
-                                ? "w-3 h-3 bg-white scale-125 shadow-[0_0_12px_rgba(255,255,255,0.85)]"
-                                : "w-6 h-6 bg-gray-500/60 md:w-3 md:h-3"}`}
-                        >
-                            {active && (
-                                <span className="absolute inset-0 w-full h-full rounded-full bg-white/30 animate-ping" aria-hidden />
-=======
-
-            {/* small inline controls */}
-            {videoKey && showVideo && (
-                <div className="absolute bottom-6 left-6 z-50 flex items-center gap-3">
-                    <button
-                        onClick={handlePlayPause}
-                        className="bg-black/60 border border-white/10 text-white px-4 py-2 rounded-xl"
-                    >
-                        ⏯
+                    <button onClick={handlePlayPause} className="rounded-xl border border-white/10 bg-black/60 px-4 py-2 text-white">
+                        {isPlaying ? <AppIcon icon={PauseIcon} size={18} /> : <AppIcon icon={PlayIcon} size={18} className="fill-current" />}
                     </button>
-
-                    <button
-                        onClick={() => setIndex((i) => (i + 1) % slides.length)}
-                        className="bg-black/60 border border-white/10 text-white px-4 py-2 rounded-xl"
-                    >
-                        ➜
+                    <button onClick={() => setIndex((i) => (i + 1) % slides.length)} className="rounded-xl border border-white/10 bg-black/60 px-4 py-2 text-white">
+                        <AppIcon icon={NextIcon} size={18} />
                     </button>
                 </div>
             )}
 
-            {/* --- SLIDE INDICATOR DOTS (updated, centered + accessible) --- */}
-            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-[90] flex items-center gap-3">
+            {/* Slide dots */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[90] flex items-center gap-3">
                 {slides.map((s, i) => {
                     const active = i === index;
-                    const label = `${i + 1}. ${s?.title || s?.name || ""}`;
-
                     return (
                         <button
                             key={i}
                             onClick={() => setIndex(i)}
-                            aria-label={`Go to slide ${i + 1}: ${s?.title || s?.name || ""}`}
-                            title={label}
-                            className={`relative rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/30 ${active
+                            aria-label={`Slide ${i + 1}: ${s?.title || s?.name || ""}`}
+                            className={`relative rounded-full transition-all duration-300 focus:outline-none ${active
                                 ? "w-3 h-3 bg-white scale-125 shadow-[0_0_12px_rgba(255,255,255,0.85)]"
-                                : "w-6 h-6 bg-gray-500/60 md:w-3 md:h-3"
+                                : "w-3 h-3 bg-gray-500/60"
                                 }`}
                         >
-                            {!active && (
-                                <span className="absolute inset-[-6px] md:inset-0 rounded-full" />
-                            )}
-
-                            {active && (
-                                <span
-                                    className="absolute inset-0 w-full h-full rounded-full bg-white/30 animate-ping"
-                                    aria-hidden="true"
-                                />
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
-                            )}
+                            {active && <span className="absolute inset-0 rounded-full bg-white/30 animate-ping" aria-hidden />}
                         </button>
                     );
                 })}
             </div>
 
-<<<<<<< HEAD
-            <style jsx>{`
-                @keyframes dust {
-                    0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
-                    10% { opacity: 0.7; }
-                    100% { transform: translateY(-60px) translateX(30px) scale(1.2); opacity: 0; }
-                }
-                .animate-dust {
-                    width: 2px; height: 2px; border-radius: 999px;
-                    animation: dust 6s linear infinite;
-                }
-                :global(.animate-ping) { animation-duration: 1.2s; }
-            `}</style>
-        </section>
-    );
-=======
             <style>{`
-                @keyframes dust {
-                    0% {
-                        transform: translateY(0) translateX(0) scale(1);
-                        opacity: 0;
-                    }
-                    10% {
-                        opacity: 0.7;
-                    }
-                    100% {
-                        transform: translateY(-60px) translateX(30px) scale(1.2);
-                        opacity: 0;
-                    }
-                }
-                .animate-dust {
-                    width: 2px;
-                    height: 2px;
-                    border-radius: 999px;
-                    animation: dust 6s linear infinite;
-                }
-
-                :global(.animate-ping) {
-                    animation-duration: 1.2s;
-                }
-            `}</style>
+        @keyframes dust {
+          0%   { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+          10%  { opacity: 0.7; }
+          100% { transform: translateY(-60px) translateX(30px) scale(1.2); opacity: 0; }
+        }
+        .animate-dust { width:2px; height:2px; border-radius:999px; animation: dust 6s linear infinite; }
+      `}</style>
         </section>
     );
-}
-
-/* ------------------ helper ------------------ */
-function enhanceOverview(text) {
-    if (!text) return "";
-    if (text.length < 220) return text;
-    const snippet = text.slice(0, 240);
-    const last = Math.max(
-        snippet.lastIndexOf(". "),
-        snippet.lastIndexOf("! "),
-        snippet.lastIndexOf("? ")
-    );
-    if (last > 50) return snippet.slice(0, last + 1);
-    return snippet.slice(0, 180).replace(/\s+\S*$/, "") + "…";
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
 }

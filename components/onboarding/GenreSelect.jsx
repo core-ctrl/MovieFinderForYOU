@@ -1,43 +1,41 @@
-// components/onboarding/GenreSelect.jsx
-import React, { useState, useEffect } from "react";
-
-const ALL_GENRES = [
-    "Thriller", "Romance", "Anime", "Sci-Fi", "Horror", "Action",
-    "Comedy", "Drama", "Documentary", "Mystery", "Fantasy", "Crime", "Bollywood", "Tollywood"
-];
+import React, { useEffect, useState } from "react";
+import { ALL_GENRES } from "../../lib/preferenceOptions";
 
 export default function GenreSelect({ value = [], onChange, minRequired = 3 }) {
     const [selected, setSelected] = useState(value);
 
-    useEffect(() => onChange?.(selected), [selected]);
+    useEffect(() => onChange?.(selected), [selected, onChange]);
 
-    const toggle = (g) => {
-        setSelected((s) => (s.includes(g) ? s.filter(x => x !== g) : [...s, g]));
+    const toggle = (genreId) => {
+        setSelected((current) =>
+            current.includes(genreId) ? current.filter((id) => id !== genreId) : [...current, genreId]
+        );
     };
 
     return (
-        <div className="p-6 bg-neutral-900 rounded-lg text-white max-w-3xl mx-auto">
-            <h2 className="text-2xl font-bold mb-3">Which genres do you like?</h2>
-            <p className="text-sm text-neutral-400 mb-4">Pick at least {minRequired} to personalize suggestions.</p>
+        <div className="mx-auto max-w-3xl rounded-lg bg-neutral-900 p-6 text-white">
+            <h2 className="mb-3 text-2xl font-bold">Which genres do you like?</h2>
+            <p className="mb-4 text-sm text-neutral-400">Pick at least {minRequired} to personalize suggestions.</p>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                {ALL_GENRES.map((g) => {
-                    const active = selected.includes(g);
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+                {ALL_GENRES.map((genre) => {
+                    const active = selected.includes(genre.id);
                     return (
                         <button
-                            key={g}
-                            onClick={() => toggle(g)}
-                            className={`px-3 py-2 rounded-full text-sm font-medium transition ${active ? "bg-red-600 text-white shadow-lg" : "bg-white/6 text-white"
-                                }`}
+                            key={genre.id}
+                            onClick={() => toggle(genre.id)}
+                            className={`rounded-full px-3 py-2 text-sm font-medium transition ${
+                                active ? "bg-red-600 text-white shadow-lg" : "bg-white/6 text-white"
+                            }`}
                         >
-                            {g}
+                            {genre.name}
                         </button>
                     );
                 })}
             </div>
 
             <div className="mt-6 text-right">
-                <span className="text-sm text-neutral-400 mr-4">{selected.length} selected</span>
+                <span className="mr-4 text-sm text-neutral-400">{selected.length} selected</span>
             </div>
         </div>
     );

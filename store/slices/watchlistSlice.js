@@ -1,12 +1,12 @@
 
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import api from "../../lib/axios";
 
 export const fetchWatchlist = createAsyncThunk(
     "watchlist/fetch",
     async (_, { rejectWithValue }) => {
         try {
-            const { data } = await axios.get("/api/user/list");
+            const { data } = await api.get("/api/user/list");
             return (data.list || []).map((i) => ({ ...i, id: i.mediaId }));
         } catch {
             return rejectWithValue([]);
@@ -21,11 +21,11 @@ export const toggleWatchlist = createAsyncThunk(
         const inList = watchlist.items.some((m) => m.id === movie.id);
         try {
             if (inList) {
-                await axios.delete("/api/user/list", {
+                await api.delete("/api/user/list", {
                     params: { mediaId: movie.id, mediaType: movie.media_type || "movie" },
                 });
             } else {
-                await axios.post("/api/user/list", {
+                await api.post("/api/user/list", {
                     mediaId: movie.id,
                     mediaType: movie.media_type || (movie.title ? "movie" : "tv"),
                     title: movie.title || movie.name,

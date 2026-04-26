@@ -1,52 +1,57 @@
-// components/onboarding/LanguageSelect.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { LANGUAGE_OPTIONS } from "../../lib/preferenceOptions";
 
-/**
- * LanguageSelect: shows primary (location-based) and secondary languages.
- * Props:
- *  - primary: string[] (preselected primary languages)
- *  - secondary: string[] (other languages)
- *  - onChange: (langs) => void
- */
-export default function LanguageSelect({ primary = [], secondary = ["Japanese", "Korean", "Spanish", "French", "German", "Arabic"], onChange }) {
-    const [selected, setSelected] = useState(primary);
+export default function LanguageSelect({ primary = [], onChange }) {
+    const primaryCodes = primary.length ? primary : ["en", "hi", "te", "ta"];
+    const [selected, setSelected] = useState(primaryCodes);
 
-    useEffect(() => onChange?.(selected), [selected]);
+    useEffect(() => onChange?.(selected), [selected, onChange]);
 
-    const toggle = (lang) => {
-        setSelected((s) => (s.includes(lang) ? s.filter(x => x !== lang) : [...s, lang]));
+    const primaryLanguages = useMemo(
+        () => primaryCodes
+            .map((code) => LANGUAGE_OPTIONS.find((language) => language.code === code))
+            .filter(Boolean),
+        [primaryCodes]
+    );
+    const secondaryLanguages = useMemo(
+        () => LANGUAGE_OPTIONS.filter((language) => !primaryCodes.includes(language.code)),
+        [primaryCodes]
+    );
+
+    const toggle = (code) => {
+        setSelected((current) => (current.includes(code) ? current.filter((item) => item !== code) : [...current, code]));
     };
 
     return (
-        <div className="p-6 bg-neutral-900 rounded-lg text-white max-w-3xl mx-auto">
-            <h2 className="text-2xl font-bold mb-3">Which languages do you prefer?</h2>
-            <p className="text-sm text-neutral-400 mb-4">We detected your region and highlighted primary choices.</p>
+        <div className="mx-auto max-w-3xl rounded-lg bg-neutral-900 p-6 text-white">
+            <h2 className="mb-3 text-2xl font-bold">Which languages do you prefer?</h2>
+            <p className="mb-4 text-sm text-neutral-400">We prioritize titles in your chosen languages.</p>
 
             <div className="mb-4">
-                <h3 className="text-sm text-neutral-300 mb-2">Primary</h3>
+                <h3 className="mb-2 text-sm text-neutral-300">Suggested</h3>
                 <div className="flex flex-wrap gap-2">
-                    {primary.map((l) => (
+                    {primaryLanguages.map((language) => (
                         <button
-                            key={l}
-                            onClick={() => toggle(l)}
-                            className={`px-3 py-2 rounded-full text-sm ${selected.includes(l) ? "bg-red-600" : "bg-white/6"}`}
+                            key={language.code}
+                            onClick={() => toggle(language.code)}
+                            className={`rounded-full px-3 py-2 text-sm ${selected.includes(language.code) ? "bg-red-600" : "bg-white/6"}`}
                         >
-                            {l}
+                            {language.label}
                         </button>
                     ))}
                 </div>
             </div>
 
             <div>
-                <h3 className="text-sm text-neutral-300 mb-2">More languages</h3>
+                <h3 className="mb-2 text-sm text-neutral-300">More languages</h3>
                 <div className="flex flex-wrap gap-2">
-                    {secondary.map((l) => (
+                    {secondaryLanguages.map((language) => (
                         <button
-                            key={l}
-                            onClick={() => toggle(l)}
-                            className={`px-3 py-2 rounded-full text-sm ${selected.includes(l) ? "bg-red-600" : "bg-white/6"}`}
+                            key={language.code}
+                            onClick={() => toggle(language.code)}
+                            className={`rounded-full px-3 py-2 text-sm ${selected.includes(language.code) ? "bg-red-600" : "bg-white/6"}`}
                         >
-                            {l}
+                            {language.label}
                         </button>
                     ))}
                 </div>

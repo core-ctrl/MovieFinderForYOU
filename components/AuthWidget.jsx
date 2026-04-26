@@ -2,8 +2,17 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
-import { FaTimes, FaEnvelope, FaLock, FaUser, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useState } from "react";
+import {
+  Cancel01Icon,
+  GithubIcon,
+  GoogleIcon,
+  LockIcon,
+  Mail01Icon,
+  UserIcon,
+  ViewIcon,
+  ViewOffSlashIcon,
+} from "@hugeicons/core-free-icons";
 import {
   loginUser, registerUser, clearError,
   selectAuthStatus, selectAuthError,
@@ -12,6 +21,7 @@ import {
   selectAuthModalMode, openAuthModal,
 } from "../store/slices/uiSlice";
 import axios from "axios";
+import AppIcon from "./AppIcon";
 
 function PasswordStrength({ password = "" }) {
   const checks = [
@@ -40,7 +50,19 @@ function PasswordStrength({ password = "" }) {
   );
 }
 
-export default function AuthWidget({ open, onClose, onLogin }) {
+function SocialButton({ href, icon, label }) {
+  return (
+    <a
+      href={href}
+      className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
+    >
+      {icon}
+      <span>{label}</span>
+    </a>
+  );
+}
+
+export default function AuthWidget({ open, onClose, onLogin, externalFeedback }) {
   const dispatch = useDispatch();
   const mode = useSelector(selectAuthModalMode);
   const status = useSelector(selectAuthStatus);
@@ -48,14 +70,22 @@ export default function AuthWidget({ open, onClose, onLogin }) {
   const loading = status === "loading";
 
   const [showPass, setShowPass] = useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
   const [success, setSuccess] = useState("");
   const [localErr, setLocalErr] = useState("");
 
   const { register, handleSubmit, watch, reset, formState: { errors } } = useForm();
   const password = watch("password", "");
+  const confirmPassword = watch("confirmPassword", "");
 
   // Clear errors on mode change
   useEffect(() => { dispatch(clearError()); setSuccess(""); setLocalErr(""); reset(); }, [mode, dispatch]);
+
+  useEffect(() => {
+    if (!externalFeedback?.message) return;
+    if (externalFeedback.type === "error") setLocalErr(externalFeedback.message);
+    if (externalFeedback.type === "success") setSuccess(externalFeedback.message);
+  }, [externalFeedback]);
 
   if (!open) return null;
 
@@ -63,6 +93,7 @@ export default function AuthWidget({ open, onClose, onLogin }) {
 
   const onSubmit = async (data) => {
     setLocalErr("");
+    setSuccess("");
     if (mode === "forgot") {
       try {
         await axios.post("/api/auth/forgot-password", { email: data.email });
@@ -71,14 +102,24 @@ export default function AuthWidget({ open, onClose, onLogin }) {
       return;
     }
 
+    if (mode === "signup") {
+      if (data.password !== data.confirmPassword) {
+        setLocalErr("Passwords do not match.");
+        return;
+      }
+    }
+
     const action = mode === "login"
       ? dispatch(loginUser({ email: data.email, password: data.password }))
       : dispatch(registerUser({ name: data.name, email: data.email, password: data.password }));
 
     const result = await action;
     if (!result.error) {
-      if (mode === "signup") setSuccess("Account created! 🎬 Welcome to Movie Finder");
-      onLogin?.();
+      if (mode === "signup") setSuccess("Account created. Thanks for joining Movie Finder.");
+      if (mode === "login") setSuccess("Thanks for signing in. Your recommendations are ready.");
+      setTimeout(() => onLogin?.(), 700);
+    } else if (mode === "signup" && String(result.payload || "").includes("Please sign in instead")) {
+      setMode("login");
     }
   };
 
@@ -103,7 +144,7 @@ export default function AuthWidget({ open, onClose, onLogin }) {
             onClick={(e) => e.stopPropagation()}
           >
             <button onClick={onClose} className="absolute top-4 right-4 text-neutral-500 hover:text-white transition">
-              <FaTimes size={16} />
+              <AppIcon icon={Cancel01Icon} size={16} />
             </button>
 
             {/* Header */}
@@ -122,9 +163,23 @@ export default function AuthWidget({ open, onClose, onLogin }) {
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+              {mode !== "forgot" && (
+                <div className="flex flex-col gap-3">
+                  <SocialButton href="/api/auth/oauth/google" icon={<AppIcon icon={GoogleIcon} size={14} />} label="Continue with Google" />
+                  <SocialButton href="/api/auth/oauth/github" icon={<AppIcon icon={GithubIcon} size={14} />} label="Continue with GitHub" />
+                  <div className="flex items-center gap-3 py-1">
+                    <div className="h-px flex-1 bg-white/10" />
+                    <span className="text-xs uppercase tracking-[0.2em] text-neutral-500">or</span>
+                    <div className="h-px flex-1 bg-white/10" />
+                  </div>
+                </div>
+              )}
+
               {mode === "signup" && (
                 <div className="relative">
-                  <FaUser className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-600 text-xs" />
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-600">
+                    <AppIcon icon={UserIcon} size={14} />
+                  </span>
                   <input {...register("name", { required: "Name is required", minLength: { value: 2, message: "Name too short" } })}
                     placeholder="Full Name" autoComplete="name"
                     className="w-full bg-white/5 border border-white/8 text-white rounded-xl pl-9 pr-4 py-3 text-sm focus:outline-none focus:border-accent placeholder:text-neutral-600 transition-colors" />
@@ -132,7 +187,9 @@ export default function AuthWidget({ open, onClose, onLogin }) {
               )}
 
               <div className="relative">
-                <FaEnvelope className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-600 text-xs" />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-600">
+                  <AppIcon icon={Mail01Icon} size={14} />
+                </span>
                 <input {...register("email", { required: "Email is required", pattern: { value: /^\S+@\S+\.\S+$/, message: "Invalid email" } })}
                   type="email" placeholder="Email address" autoComplete="email"
                   className="w-full bg-white/5 border border-white/8 text-white rounded-xl pl-9 pr-4 py-3 text-sm focus:outline-none focus:border-accent placeholder:text-neutral-600 transition-colors" />
@@ -141,13 +198,15 @@ export default function AuthWidget({ open, onClose, onLogin }) {
               {mode !== "forgot" && (
                 <div>
                   <div className="relative">
-                    <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-600 text-xs" />
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-600">
+                      <AppIcon icon={LockIcon} size={14} />
+                    </span>
                     <input {...register("password", { required: "Password is required", minLength: { value: 8, message: "Min 8 characters" } })}
                       type={showPass ? "text" : "password"} placeholder="Password" autoComplete={mode === "login" ? "current-password" : "new-password"}
                       className="w-full bg-white/5 border border-white/8 text-white rounded-xl pl-9 pr-10 py-3 text-sm focus:outline-none focus:border-accent placeholder:text-neutral-600 transition-colors" />
                     <button type="button" onClick={() => setShowPass((s) => !s)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-600 hover:text-white transition-colors">
-                      {showPass ? <FaEyeSlash size={13} /> : <FaEye size={13} />}
+                      {showPass ? <AppIcon icon={ViewOffSlashIcon} size={13} /> : <AppIcon icon={ViewIcon} size={13} />}
                     </button>
                   </div>
                   {mode === "signup" && <PasswordStrength password={password} />}
@@ -156,6 +215,31 @@ export default function AuthWidget({ open, onClose, onLogin }) {
                       Forgot password?
                     </button>
                   )}
+                </div>
+              )}
+
+              {mode === "signup" && (
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-600">
+                    <AppIcon icon={LockIcon} size={14} />
+                  </span>
+                  <input
+                    {...register("confirmPassword", {
+                      required: "Please confirm your password",
+                      validate: (value) => value === password || "Passwords do not match",
+                    })}
+                    type={showConfirmPass ? "text" : "password"}
+                    placeholder="Confirm Password"
+                    autoComplete="new-password"
+                    className="w-full bg-white/5 border border-white/8 text-white rounded-xl pl-9 pr-10 py-3 text-sm focus:outline-none focus:border-accent placeholder:text-neutral-600 transition-colors"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPass((s) => !s)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-600 hover:text-white transition-colors"
+                  >
+                    {showConfirmPass ? <AppIcon icon={ViewOffSlashIcon} size={13} /> : <AppIcon icon={ViewIcon} size={13} />}
+                  </button>
                 </div>
               )}
 

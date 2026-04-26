@@ -9,3 +9,7 @@ node_modules
 .next
 vercel.json
 vercel.json
+.env
+.env.local
+.env.*.local
+vercel.json

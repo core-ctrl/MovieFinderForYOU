@@ -1,38 +1,47 @@
-//home/claude / movie - finder - v2 / pages / api / analytics / event.js << 'EOF'
-// pages/api/analytics/event.js
-// Track user events: trailer_play, save, search, click
-import { connectDB } from "@/lib/mongodb";
-import { requireAuth } from "@/middleware/requireAuth";
 import { z } from "zod";
 import { validate } from "@/middleware/validate";
+import { formLimiter } from "@/lib/rateLimit";
+import { getClientIp, sanitizeSearchQuery, sanitizeText } from "@/lib/security";
+import { requireAuth } from "@/middleware/requireAuth";
 
 const eventSchema = z.object({
-    event: z.enum(["trailer_play", "save", "unsave", "search", "click", "page_view"]),
-    mediaId: z.number().optional(),
-    mediaType: z.string().optional(),
-    query: z.string().optional(),
-    page: z.string().optional(),
+  event: z.enum(["trailer_play", "save", "unsave", "search", "watch_now_click", "page_view"]),
+  mediaId: z.number().optional(),
+  mediaType: z.string().optional(),
+  query: z.string().optional(),
+  page: z.string().optional(),
+  provider: z.string().optional(),
 });
 
 export default async function handler(req, res) {
-    if (req.method !== "POST") return res.status(405).end();
+  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-    const { success, data, error } = validate(eventSchema, req.body);
-    if (!success) return res.status(400).json({ error });
+  const ip = getClientIp(req);
+  const limit = formLimiter(ip);
+  if (!limit.allowed) {
+    return res.status(429).json({ error: "Rate limit exceeded" });
+  }
 
-    // Non-blocking — respond immediately
-    res.status(200).json({ ok: true });
+  const { success, data, error } = validate(eventSchema, req.body);
+  if (!success) return res.status(400).json({ error });
 
-    // Process event asynchronously
-    setImmediate(async () => {
-        try {
-            const decoded = requireAuth(req);
-            // In production: write to analytics DB or send to Mixpanel / GA4 Measurement Protocol
-            // For now: log for development visibility
-            if (process.env.NODE_ENV === "development") {
-                console.log(`📊 Event: ${data.event}`, { userId: decoded?.id, ...data });
-            }
-            // TODO: await AnalyticsService.track({ userId: decoded?.id, ...data });
-        } catch { }
-    });
+  res.status(200).json({ ok: true });
+
+  setImmediate(() => {
+    try {
+      const decoded = requireAuth(req);
+      const payload = {
+        ...data,
+        query: data.query ? sanitizeSearchQuery(data.query) : undefined,
+        page: data.page ? sanitizeText(data.page, { maxLength: 120 }) : undefined,
+        provider: data.provider ? sanitizeText(data.provider, { maxLength: 80 }) : undefined,
+      };
+
+      if (process.env.NODE_ENV === "development") {
+        console.log("ANALYTICS_EVENT", { userId: decoded?.id, ...payload });
+      }
+    } catch {
+      // Ignore analytics pipeline failures.
+    }
+  });
 }

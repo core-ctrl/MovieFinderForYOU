@@ -1,12 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import api from "../../lib/axios";
 
 // ── Async thunks ────────────────────────────────────────────────
 export const fetchCurrentUser = createAsyncThunk(
     "auth/fetchCurrentUser",
     async (_, { rejectWithValue }) => {
         try {
-            const { data } = await axios.get("/api/auth/me");
+            const { data } = await api.get("/api/auth/me");
             return data.user;
         } catch {
             return rejectWithValue(null);
@@ -18,7 +18,7 @@ export const loginUser = createAsyncThunk(
     "auth/login",
     async ({ email, password }, { rejectWithValue }) => {
         try {
-            const { data } = await axios.post("/api/auth/login", { email, password });
+            const { data } = await api.post("/api/auth/login", { email, password });
             return data.user;
         } catch (err) {
             return rejectWithValue(err.response?.data?.error || "Login failed");
@@ -30,7 +30,7 @@ export const registerUser = createAsyncThunk(
     "auth/register",
     async ({ name, email, password }, { rejectWithValue }) => {
         try {
-            const { data } = await axios.post("/api/auth/register", { name, email, password });
+            const { data } = await api.post("/api/auth/register", { name, email, password });
             return data.user;
         } catch (err) {
             return rejectWithValue(err.response?.data?.error || "Registration failed");
@@ -39,7 +39,7 @@ export const registerUser = createAsyncThunk(
 );
 
 export const logoutUser = createAsyncThunk("auth/logout", async () => {
-    await axios.post("/api/auth/logout");
+    await api.post("/api/auth/logout");
     return null;
 });
 

@@ -5,13 +5,20 @@
 // 3. User history signals (watchlist, searches, clicks)
 
 import { getCache, setCache } from "../lib/cache.js";
-import { fetchRecommendedByGenres, fetchByGenre, fetchTrendingMovies, fetchTrendingTV } from "../lib/tmdb.js";
+import { fetchByGenre, fetchTrendingMovies, fetchTrendingTV, fetchWatchProviders } from "../lib/tmdb.js";
 
 // ── Score a candidate item against user profile ────────────────────
 function scoreForUser(item, profile) {
     let score = 0;
 
-    const { preferredGenres = [], watchedIds = [], searchGenres = [] } = profile;
+    const {
+        preferredGenres = [],
+        preferredLanguages = [],
+        preferredRegions = [],
+        preferredRegionGroup = "",
+        watchedIds = [],
+        searchGenres = [],
+    } = profile;
     const itemGenres = item.genre_ids || item.genres?.map((g) => g.id) || [];
 
     // Genre overlap with explicit preferences
@@ -24,6 +31,15 @@ function scoreForUser(item, profile) {
 
     // Skip already watched
     if (watchedIds.includes(item.id)) score -= 1000;
+
+    if (preferredLanguages.length && item.original_language && preferredLanguages.includes(item.original_language)) {
+        score += 12;
+    }
+
+    if (preferredRegions.length && Array.isArray(item.origin_country)) {
+        const regionOverlap = item.origin_country.filter((country) => preferredRegions.includes(country)).length;
+        score += regionOverlap * 10;
+    }
 
     // Popularity boost (logarithmic so blockbusters don't dominate)
     score += Math.log10(Math.max(item.popularity || 1, 1)) * 5;
@@ -42,6 +58,9 @@ function scoreForUser(item, profile) {
 // ── Build user profile from DB data ──────────────────────────────
 export function buildUserProfile(user) {
     const preferredGenres = user.preferredGenres || [];
+    const preferredLanguages = user.preferredLanguages || [];
+    const preferredRegions = user.preferredRegions || [];
+    const preferredRegionGroup = user.preferredRegionGroup || "";
 
     // Extract genre signals from watch history
     const watchedIds = (user.watchHistory || []).map((h) => h.mediaId);
@@ -49,13 +68,19 @@ export function buildUserProfile(user) {
     // Implicit genres from wishlist items (if genre_ids stored)
     const searchGenres = [];
 
-    return { preferredGenres, watchedIds, searchGenres };
+    return { preferredGenres, preferredLanguages, preferredRegions, preferredRegionGroup, watchedIds, searchGenres };
 }
 
 // ── Main recommendation generator ─────────────────────────────────
 export async function getRecommendations(user, options = {}) {
     const { limit = 20, type = "all" } = options;
-    const cacheKey = `recs:${user._id}:${type}`;
+    const cacheIdentity = user?._id || JSON.stringify({
+        genres: user.preferredGenres || [],
+        languages: user.preferredLanguages || [],
+        regions: user.preferredRegions || [],
+        group: user.preferredRegionGroup || "",
+    });
+    const cacheKey = `recs:${cacheIdentity}:${type}`;
     const cached = getCache(cacheKey);
     if (cached) return cached;
 
@@ -67,7 +92,11 @@ export async function getRecommendations(user, options = {}) {
             fetchTrendingMovies().then((r) => r.slice(0, limit)),
             fetchTrendingTV().then((r) => r.slice(0, limit)),
         ]);
-        const result = { movies, tv, source: "trending" };
+        const result = {
+            movies: await prioritizeByAvailability(movies, profile.preferredRegions[0], "movie", limit),
+            tv: await prioritizeByAvailability(tv, profile.preferredRegions[0], "tv", limit),
+            source: "trending",
+        };
         setCache(cacheKey, result);
         return result;
     }
@@ -102,9 +131,41 @@ export async function getRecommendations(user, options = {}) {
         .sort((a, b) => b._score - a._score)
         .slice(0, limit);
 
-    const result = { movies, tv, source: "personalized", genres: profile.preferredGenres };
+    const result = {
+        movies: await prioritizeByAvailability(movies, profile.preferredRegions[0], "movie", limit),
+        tv: await prioritizeByAvailability(tv, profile.preferredRegions[0], "tv", limit),
+        source: "personalized",
+        genres: profile.preferredGenres,
+    };
     setCache(cacheKey, result);
     return result;
+}
+
+async function prioritizeByAvailability(items, regionCode, mediaType, limit) {
+    if (!regionCode || !items.length) {
+        return items.slice(0, limit);
+    }
+
+    const inspected = await Promise.all(
+        items.slice(0, Math.min(items.length, limit + 6)).map(async (item) => {
+            try {
+                const availability = await fetchWatchProviders(item.id, mediaType, regionCode);
+                const availabilityBoost =
+                    (availability?.flatrate?.length || 0) * 20 +
+                    (availability?.rent?.length || 0) * 8 +
+                    (availability?.buy?.length || 0) * 6 +
+                    (availability?.theatrical?.length || 0) * 16;
+
+                return { ...item, availability, _availabilityBoost: availabilityBoost };
+            } catch {
+                return { ...item, _availabilityBoost: 0 };
+            }
+        })
+    );
+
+    return inspected
+        .sort((a, b) => (b._score + b._availabilityBoost) - (a._score + a._availabilityBoost))
+        .slice(0, limit);
 }
 
 // ── "Because You Watched" — content-based similar items ──────────

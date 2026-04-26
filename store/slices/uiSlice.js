@@ -1,32 +1,40 @@
-cat > /home/claude / movie - finder - v2 / store / slices / uiSlice.js << 'EOF'
-// store/slices/uiSlice.js
-// Global UI state: modals, trailer, theme
 import { createSlice } from "@reduxjs/toolkit";
 
+const initialTrailer = {
+  open: false,
+  key: null,
+  title: "",
+  id: null,
+  type: "movie",
+};
+
 const uiSlice = createSlice({
-    name: "ui",
-    initialState: {
-        authModalOpen: false,
-        authModalMode: "login",       // login | signup | forgot
-        trailer: {
-            open: false,
-            key: null,
-            title: "",
-            id: null,
-            type: "movie",
-        },
+  name: "ui",
+  initialState: {
+    authModalOpen: false,
+    authModalMode: "login",
+    trailer: initialTrailer,
+  },
+  reducers: {
+    openAuthModal: (state, action) => {
+      state.authModalOpen = true;
+      state.authModalMode = action.payload || "login";
     },
-    reducers: {
-        openAuthModal: (s, a) => { s.authModalOpen = true; s.authModalMode = a.payload || "login"; },
-        closeAuthModal: (s) => { s.authModalOpen = false; },
-        openTrailer: (s, a) => { s.trailer = { open: true, ...a.payload }; },
-        closeTrailer: (s) => { s.trailer = { open: false, key: null, title: "", id: null, type: "movie" }; },
+    closeAuthModal: (state) => {
+      state.authModalOpen = false;
     },
+    openTrailer: (state, action) => {
+      state.trailer = { open: true, ...initialTrailer, ...action.payload };
+    },
+    closeTrailer: (state) => {
+      state.trailer = initialTrailer;
+    },
+  },
 });
 
 export const { openAuthModal, closeAuthModal, openTrailer, closeTrailer } = uiSlice.actions;
-export const selectAuthModalOpen = (s) => s.ui.authModalOpen;
-export const selectAuthModalMode = (s) => s.ui.authModalMode;
-export const selectTrailer = (s) => s.ui.trailer;
-export default uiSlice.reducer;
+export const selectAuthModalOpen = (state) => state.ui.authModalOpen;
+export const selectAuthModalMode = (state) => state.ui.authModalMode;
+export const selectTrailer = (state) => state.ui.trailer;
 
+export default uiSlice.reducer;

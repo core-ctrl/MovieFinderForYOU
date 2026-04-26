@@ -1,8 +1,13 @@
 // pages/series/[id].jsx
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Head from "next/head";
 import Link from "next/link";
+import { PlayIcon, PlusSignIcon, UserIcon } from "@hugeicons/core-free-icons";
+import SEOMeta from "../../components/SEOMeta";
+import WatchNowButtons from "../../components/WatchNowButtons";
+import { buildMovieSchema } from "../../lib/seo";
+import { readStoredPreferences } from "../../lib/userPreferences";
+import AppIcon from "../../components/AppIcon";
 
 export default function SeriesDetailPage({ addToWishlist, wishlist = [], openTrailer }) {
   const router = useRouter();
@@ -10,12 +15,25 @@ export default function SeriesDetailPage({ addToWishlist, wishlist = [], openTra
 
   const [show, setShow] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [regionCode, setRegionCode] = useState("IN");
+  const [trailerKey, setTrailerKey] = useState(null);
+  const [trailerLoading, setTrailerLoading] = useState(false);
 
   useEffect(() => {
-    if (!id) return;
-    fetch(`/api/media/tv/${id}`)
+    if (!id) return undefined;
+    const stored = readStoredPreferences();
+    const nextRegion = stored.regions?.[0] || "IN";
+    setRegionCode(nextRegion);
+    fetch(`/api/media/tv/${id}?region=${nextRegion}`)
       .then((r) => r.json())
-      .then(setShow)
+      .then((data) => {
+        setShow(data);
+        const key =
+          data.videos?.results?.find((v) => v.type === "Trailer" && v.site === "YouTube")?.key ||
+          data.videos?.results?.[0]?.key ||
+          null;
+        setTrailerKey(key);
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [id]);
@@ -35,18 +53,43 @@ export default function SeriesDetailPage({ addToWishlist, wishlist = [], openTra
       </div>
     );
 
-  const trailer = show.videos?.results?.find(
-    (v) => v.type === "Trailer" && v.site === "YouTube"
-  ) || show.videos?.results?.[0];
+  const handlePlayTrailer = async () => {
+    if (trailerKey) {
+      openTrailer(trailerKey, show.name, show.id, "tv");
+      return;
+    }
+    setTrailerLoading(true);
+    try {
+      const res = await fetch(`/api/trailer?id=${show.id}&media_type=tv`);
+      const data = await res.json();
+      const key = data.trailer?.key || null;
+      if (key) {
+        setTrailerKey(key);
+        openTrailer(key, show.name, show.id, "tv");
+      } else {
+        alert("❌ Trailer not available.");
+      }
+    } catch {
+      alert("❌ Failed to load trailer.");
+    } finally {
+      setTrailerLoading(false);
+    }
+  };
 
   const isInList = wishlist.some((m) => m.id === show.id);
   const creator = show.created_by?.[0];
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <Head>
-        <title>{show.name} — Movie Finder</title>
-      </Head>
+      <SEOMeta
+        title={`${show.name} (${show.first_air_date?.slice(0, 4)}) — Series Guide and Trailer`}
+        description={show.overview?.slice(0, 160)}
+        image={show.backdrop_path ? `https://image.tmdb.org/t/p/w1280${show.backdrop_path}` : undefined}
+        url={`/series/${show.id}`}
+        type="video.tv_show"
+        jsonLd={buildMovieSchema(show, `/series/${show.id}`, "TVSeries")}
+        keywords={[show.name, "series trailer", "where to watch", ...(show.genres?.map((genre) => genre.name) || [])]}
+      />
 
       {/* Backdrop */}
       <div className="relative w-full h-[55vh] md:h-[75vh]">
@@ -77,11 +120,10 @@ export default function SeriesDetailPage({ addToWishlist, wishlist = [], openTra
                 <span>{show.number_of_seasons} Season{show.number_of_seasons !== 1 ? "s" : ""}</span>
               )}
               <span
-                className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                  show.status === "Returning Series"
-                    ? "bg-green-600/20 text-green-400"
-                    : "bg-neutral-600/30 text-neutral-300"
-                }`}
+                className={`px-2 py-0.5 rounded-full text-xs font-medium ${show.status === "Returning Series"
+                  ? "bg-green-600/20 text-green-400"
+                  : "bg-neutral-600/30 text-neutral-300"
+                  }`}
               >
                 {show.status}
               </span>
@@ -107,22 +149,24 @@ export default function SeriesDetailPage({ addToWishlist, wishlist = [], openTra
 
             <div className="flex flex-wrap gap-3">
               <button
-                onClick={() => openTrailer(trailer?.key, show.name, show.id, "tv")}
-                className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl font-medium flex items-center gap-2 transition"
+                onClick={handlePlayTrailer}
+                disabled={trailerLoading}
+                className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl font-medium flex items-center gap-2 transition disabled:opacity-60"
               >
-                ▶ Play Trailer
+                <AppIcon icon={PlayIcon} size={17} className="fill-current" />
+                {trailerLoading ? "Loading…" : "Play Trailer"}
               </button>
               <button
                 onClick={() => addToWishlist({ ...show, media_type: "tv", title: show.name })}
-                className={`px-6 py-3 rounded-xl font-medium transition ${
-                  isInList
-                    ? "bg-green-600/20 text-green-400 border border-green-600/40"
-                    : "bg-white/10 hover:bg-white/20 text-white"
-                }`}
+                className={`px-6 py-3 rounded-xl font-medium transition ${isInList
+                  ? "bg-green-600/20 text-green-400 border border-green-600/40"
+                  : "bg-white/10 hover:bg-white/20 text-white"
+                  }`}
               >
-                {isInList ? "✓ In My List" : "+ My List"}
+                {isInList ? "In My List" : <span className="inline-flex items-center gap-2"><AppIcon icon={PlusSignIcon} size={16} />My List</span>}
               </button>
             </div>
+            <WatchNowButtons providers={show.providers} title={show.name} region={show.region || regionCode} />
           </div>
         </div>
 
@@ -141,33 +185,13 @@ export default function SeriesDetailPage({ addToWishlist, wishlist = [], openTra
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-3xl">👤</div>
+                      <div className="flex h-full w-full items-center justify-center text-neutral-500">
+                        <AppIcon icon={UserIcon} size={26} />
+                      </div>
                     )}
                   </div>
                   <p className="text-xs font-medium truncate">{actor.name}</p>
                   <p className="text-xs text-neutral-500 truncate">{actor.character}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Where to Watch */}
-        {show.providers?.flatrate?.length > 0 && (
-          <section className="mt-12 mb-8">
-            <h2 className="text-xl font-bold mb-4">Where to Watch</h2>
-            <div className="flex gap-4 flex-wrap">
-              {show.providers.flatrate.map((p) => (
-                <div key={p.provider_id} className="flex flex-col items-center gap-1">
-                  <img
-                    src={`https://image.tmdb.org/t/p/w92${p.logo_path}`}
-                    alt={p.provider_name}
-                    title={p.provider_name}
-                    className="w-12 h-12 rounded-xl border border-white/10"
-                  />
-                  <span className="text-xs text-neutral-400 text-center w-14 truncate">
-                    {p.provider_name}
-                  </span>
                 </div>
               ))}
             </div>

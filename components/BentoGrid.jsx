@@ -2,6 +2,8 @@
 // Magic Bento Grid for homepage — shows featured content in editorial layout
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { PlayIcon, Tv01Icon } from "@hugeicons/core-free-icons";
+import AppIcon from "./AppIcon";
 
 function BentoCell({ item, size = "normal", rank }) {
   if (!item) return <div className="bento-cell skeleton" />;
@@ -10,6 +12,7 @@ function BentoCell({ item, size = "normal", rank }) {
   const img     = item.backdrop_path
     ? `https://image.tmdb.org/t/p/w780${item.backdrop_path}`
     : item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : "/fallback.jpg";
+  const TypeIcon = isMovie ? PlayIcon : Tv01Icon;
 
   return (
     <motion.div
@@ -28,8 +31,9 @@ function BentoCell({ item, size = "normal", rank }) {
 
         <div className="absolute bottom-0 left-0 right-0 p-5">
           {size === "large" && (
-            <span className="text-xs font-semibold text-accent uppercase tracking-widest mb-2 block">
-              {isMovie ? "🎬 Movie" : "📺 Series"}
+            <span className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-accent">
+              <AppIcon icon={TypeIcon} size={14} />
+              {isMovie ? "Movie" : "Series"}
             </span>
           )}
           <h3 className={`font-bold text-white leading-tight ${size === "large" ? "text-2xl" : "text-base"}`}>

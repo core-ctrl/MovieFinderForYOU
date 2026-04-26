@@ -1,5 +1,8 @@
 // components/TrailerModal.jsx
+
 import { useEffect, useRef, useState } from "react";
+import useAdaptiveVideoQuality, { QUALITY_MAP } from "../hooks/useAdaptiveVideoQuality";
+import QualitySelector from "./trailer/QualitySelector";
 
 /**
  * TrailerModal
@@ -30,6 +33,11 @@ export default function TrailerModal({
     const [isPlaying, setIsPlaying] = useState(false);
     const [muted, setMuted] = useState(true);
     const [repeat, setRepeat] = useState(false);
+    const [userQuality, setUserQuality] = useState(null); // manual override
+
+    const { vqParam: adaptiveVq, ytQuality: adaptiveYt, quality: adaptiveQualityLabel } = useAdaptiveVideoQuality();
+    const effectiveVq = userQuality ? (QUALITY_MAP[userQuality]?.vq || adaptiveVq) : adaptiveVq;
+    const effectiveYt = userQuality ? (QUALITY_MAP[userQuality]?.yt || adaptiveYt) : adaptiveYt;
 
     const ytPlayerRef = useRef(null);
     const ytContainerRef = useRef(null);
@@ -84,7 +92,7 @@ export default function TrailerModal({
         }
 
         return () => {
-            // do not destroy here — handled in cleanupPlayer when modal closes/changes
+            cleanupPlayer();
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open, videoIdOrUrl, provider]);
@@ -155,11 +163,13 @@ export default function TrailerModal({
                 playsinline: 1,
                 rel: 0,
                 modestbranding: 1,
+                vq: effectiveVq,
+                iv_load_policy: 3,
             },
             events: {
                 onReady: (e) => {
                     try {
-                        e.target.setPlaybackQuality("hd720");
+                        e.target.setPlaybackQuality(effectiveYt);
                         if (muted) e.target.mute();
                         else e.target.unMute();
                     } catch { }
@@ -211,6 +221,8 @@ export default function TrailerModal({
                 body: JSON.stringify({
                     mediaId,
                     mediaType,
+                    title: title || "",
+                    posterPath: "",
                 })
             });
         } catch { }
@@ -496,6 +508,23 @@ export default function TrailerModal({
                     <div className="text-white/80 text-sm ml-2">
                         {formatTime(currentTime)} / {formatTime(duration)}
                     </div>
+
+                    {/* Quality selector */}
+                    {provider === "youtube" && (
+                        <div className="ml-3">
+                            <QualitySelector
+                                quality={userQuality || adaptiveQualityLabel}
+                                onChange={(q) => {
+                                    setUserQuality(q);
+                                    try {
+                                        if (ytPlayerRef.current?.setPlaybackQuality) {
+                                            ytPlayerRef.current.setPlaybackQuality(QUALITY_MAP[q]?.yt || adaptiveYt);
+                                        }
+                                    } catch { }
+                                }}
+                            />
+                        </div>
+                    )}
                 </div>
 
                 {/* Close / extra controls top-right */}

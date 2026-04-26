@@ -3,11 +3,22 @@ import Head from "next/head";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  FaUsers, FaFilm, FaHeart, FaTrash, FaShieldAlt,
-  FaChartBar, FaDatabase, FaSignOutAlt, FaKey,
-  FaCheck, FaTimes, FaServer, FaMemory,
-} from "react-icons/fa";
+  Cancel01Icon,
+  ChartBarLineIcon,
+  CheckmarkCircle01Icon,
+  CloudServerIcon,
+  CpuIcon,
+  DatabaseIcon,
+  Delete02Icon,
+  FavouriteIcon,
+  Key01Icon,
+  Logout01Icon,
+  PlayIcon,
+  Shield01Icon,
+  UserMultipleIcon,
+} from "@hugeicons/core-free-icons";
 import { getCacheStats } from "../../lib/cache";
+import AppIcon from "../../components/AppIcon";
 
 // ── Admin login form ──────────────────────────────────────────────
 function AdminLogin({ onLogin }) {
@@ -43,7 +54,7 @@ function AdminLogin({ onLogin }) {
       >
         <div className="text-center mb-8">
           <div className="w-14 h-14 bg-accent/10 border border-accent/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <FaShieldAlt className="text-accent" size={24} />
+            <AppIcon icon={Shield01Icon} className="text-accent" size={24} />
           </div>
           <h1 className="text-2xl font-black text-white">Admin Portal</h1>
           <p className="text-neutral-500 text-sm mt-1">MovieFinder — Secure Admin Access</p>
@@ -149,9 +160,9 @@ export default function AdminPage() {
   if (!admin) return <AdminLogin onLogin={(user) => { setAdmin(user); loadData(); }} />;
 
   const tabs = [
-    { id: "overview", icon: <FaChartBar />, label: "Overview" },
-    { id: "users", icon: <FaUsers />, label: "Users" },
-    { id: "system", icon: <FaServer />, label: "System" },
+    { id: "overview", icon: <AppIcon icon={ChartBarLineIcon} size={14} />, label: "Overview" },
+    { id: "users", icon: <AppIcon icon={UserMultipleIcon} size={14} />, label: "Users" },
+    { id: "system", icon: <AppIcon icon={CloudServerIcon} size={14} />, label: "System" },
   ];
 
   return (
@@ -193,7 +204,7 @@ export default function AdminPage() {
           </a>
           <button onClick={handleLogout}
             className="flex items-center gap-2 text-xs text-red-500/70 hover:text-red-400 transition-colors px-3 py-2">
-            <FaSignOutAlt size={10} /> Sign Out
+            <AppIcon icon={Logout01Icon} size={10} /> Sign Out
           </button>
         </div>
       </aside>
@@ -217,10 +228,10 @@ export default function AdminPage() {
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-                <StatCard icon={<FaUsers />} label="Total Users" value={stats?.totalUsers ?? "—"} color="text-blue-400" />
-                <StatCard icon={<FaHeart />} label="Saved Titles" value={stats?.totalWishlists ?? "—"} color="text-red-400" />
-                <StatCard icon={<FaFilm />} label="Data Source" value="TMDB" sub="Live API" color="text-yellow-400" />
-                <StatCard icon={<FaDatabase />} label="Database" value="Atlas" sub="Connected" color="text-green-400" />
+                <StatCard icon={<AppIcon icon={UserMultipleIcon} />} label="Total Users" value={stats?.totalUsers ?? "—"} color="text-blue-400" />
+                <StatCard icon={<AppIcon icon={FavouriteIcon} />} label="Saved Titles" value={stats?.totalWishlists ?? "—"} color="text-red-400" />
+                <StatCard icon={<AppIcon icon={PlayIcon} />} label="Data Source" value="TMDB" sub="Live API" color="text-yellow-400" />
+                <StatCard icon={<AppIcon icon={DatabaseIcon} />} label="Database" value="Atlas" sub="Connected" color="text-green-400" />
               </div>
 
               {/* Recent users table */}
@@ -300,12 +311,12 @@ export default function AdminPage() {
                             <button onClick={() => toggleAdmin(u._id, u.isAdmin)}
                               title={u.isAdmin ? "Remove Admin" : "Make Admin"}
                               className="w-7 h-7 bg-white/8 hover:bg-white/15 rounded-lg flex items-center justify-center transition-colors">
-                              <FaKey size={10} className={u.isAdmin ? "text-accent" : "text-neutral-400"} />
+                              <AppIcon icon={Key01Icon} size={10} className={u.isAdmin ? "text-accent" : "text-neutral-400"} />
                             </button>
                             <button onClick={() => deleteUser(u._id)}
                               title="Delete User"
                               className="w-7 h-7 bg-red-500/10 hover:bg-red-500/20 rounded-lg flex items-center justify-center transition-colors">
-                              <FaTrash size={10} className="text-red-400" />
+                              <AppIcon icon={Delete02Icon} size={10} className="text-red-400" />
                             </button>
                           </div>
                         </td>
@@ -328,7 +339,7 @@ export default function AdminPage() {
                 <div className="card p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      <FaMemory className="text-yellow-400" />
+                      <AppIcon icon={CpuIcon} className="text-yellow-400" />
                       <h3 className="font-bold">TMDB Cache</h3>
                     </div>
                     <button onClick={clearCacheAction}
@@ -349,7 +360,7 @@ export default function AdminPage() {
                 {/* API status */}
                 <div className="card p-6">
                   <div className="flex items-center gap-3 mb-4">
-                    <FaServer className="text-blue-400" />
+                    <AppIcon icon={CloudServerIcon} className="text-blue-400" />
                     <h3 className="font-bold">API Status</h3>
                   </div>
                   {[
@@ -364,8 +375,8 @@ export default function AdminPage() {
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-neutral-600">{s.note}</span>
                         {s.ok
-                          ? <FaCheck size={10} className="text-green-400" />
-                          : <FaTimes size={10} className="text-red-400" />}
+                          ? <AppIcon icon={CheckmarkCircle01Icon} size={10} className="text-green-400" />
+                          : <AppIcon icon={Cancel01Icon} size={10} className="text-red-400" />}
                       </div>
                     </div>
                   ))}

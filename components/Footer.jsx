@@ -1,5 +1,7 @@
 // components/Footer.jsx
 import Link from "next/link";
+import { Mail01Icon, News01Icon, Shield01Icon } from "@hugeicons/core-free-icons";
+import AppIcon from "./AppIcon";
 
 export default function Footer() {
   return (
@@ -7,15 +9,15 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
           <div>
-            <h3 className="text-white font-bold text-lg mb-3">🎬 Movie Finder</h3>
+            <h3 className="text-white font-bold text-lg mb-3">Movie Finder</h3>
             <p className="text-neutral-500 text-xs leading-relaxed">
-              Discover movies, series and anime. Watch trailers, find where to stream, save your favourites.
+              Discover movies, series, anime, trailers, blog guides, and streaming options with privacy-conscious personalization.
             </p>
           </div>
           <div>
             <h4 className="text-neutral-300 font-semibold text-sm mb-3">Discover</h4>
             <div className="flex flex-col gap-2">
-              {[["Home", "/"], ["Movies", "/movies"], ["Series", "/series"], ["My List", "/my-list"]].map(([label, href]) => (
+              {[["Home", "/"], ["Movies", "/movies"], ["Series", "/series"], ["Blog", "/blog"], ["My List", "/my-list"]].map(([label, href]) => (
                 <Link key={href} href={href} className="text-neutral-500 hover:text-white text-xs transition">{label}</Link>
               ))}
             </div>
@@ -23,16 +25,27 @@ export default function Footer() {
           <div>
             <h4 className="text-neutral-300 font-semibold text-sm mb-3">Legal</h4>
             <div className="flex flex-col gap-2">
-              {[["Privacy Policy", "/privacy"], ["Terms of Service", "/terms"], ["DMCA", "/dmca"], ["About", "/about"]].map(([label, href]) => (
+              {[["About", "/about"], ["Contact", "/contact"], ["Privacy Policy", "/privacy-policy"], ["Terms and Conditions", "/terms-and-conditions"], ["DMCA", "/dmca"]].map(([label, href]) => (
                 <Link key={href} href={href} className="text-neutral-500 hover:text-white text-xs transition">{label}</Link>
               ))}
             </div>
           </div>
           <div>
             <h4 className="text-neutral-300 font-semibold text-sm mb-3">Contact</h4>
-            <a href="mailto:moviefinderforyou@gmail.com" className="text-neutral-500 hover:text-white text-xs transition block mb-2">
-              moviefinderforyou@gmail.com
-            </a>
+            <div className="flex flex-col gap-2 text-xs text-neutral-500">
+              <a href="mailto:moviefinderforyou@gmail.com" className="inline-flex items-center gap-2 transition hover:text-white">
+                <AppIcon icon={Mail01Icon} size={12} />
+                moviefinderforyou@gmail.com
+              </a>
+              <Link href="/blog" className="inline-flex items-center gap-2 transition hover:text-white">
+                <AppIcon icon={News01Icon} size={12} />
+                Editorial guides and blog
+              </Link>
+              <Link href="/privacy-policy" className="inline-flex items-center gap-2 transition hover:text-white">
+                <AppIcon icon={Shield01Icon} size={12} />
+                Cookie and privacy controls
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -55,8 +68,5 @@ export default function Footer() {
       </div>
     </footer>
   );
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
+

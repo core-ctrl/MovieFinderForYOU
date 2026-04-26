@@ -2,8 +2,15 @@
 import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/router";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaSearch, FaTimes, FaFire, FaFilm, FaTv } from "react-icons/fa";
+import {
+  Cancel01Icon,
+  FireIcon,
+  PlayIcon,
+  Search01Icon,
+  Tv01Icon,
+} from "@hugeicons/core-free-icons";
 import axios from "axios";
+import AppIcon from "./AppIcon";
 
 const TRENDING = ["Interstellar", "Breaking Bad", "The Dark Knight", "Oppenheimer", "Stranger Things"];
 
@@ -57,7 +64,7 @@ export default function SmartSearch({ fullscreen = false, onClose }) {
                 }`}>
                 {loading
                     ? <div className="w-3 h-3 border-2 border-red-500 border-t-transparent rounded-full animate-spin flex-shrink-0" />
-                    : <FaSearch className="text-neutral-500 flex-shrink-0 text-xs" />
+                    : <AppIcon icon={Search01Icon} size={14} className="text-neutral-500 flex-shrink-0" />
                 }
                 <input
                     ref={inputRef}
@@ -73,7 +80,7 @@ export default function SmartSearch({ fullscreen = false, onClose }) {
                 />
                 {query && (
                     <button onClick={() => { setQuery(""); setSugg([]); }} className="text-neutral-600 hover:text-white transition-colors">
-                        <FaTimes size={11} />
+                        <AppIcon icon={Cancel01Icon} size={11} />
                     </button>
                 )}
             </div>
@@ -97,7 +104,7 @@ export default function SmartSearch({ fullscreen = false, onClose }) {
                                             <img src={`https://image.tmdb.org/t/p/w92${s.poster}`} alt={s.title} className="w-8 h-12 object-cover rounded-md flex-shrink-0" />
                                         ) : (
                                             <div className="w-8 h-12 bg-white/5 rounded-md flex items-center justify-center flex-shrink-0">
-                                                {s.type === "movie" ? <FaFilm size={10} /> : <FaTv size={10} />}
+                                                {s.type === "movie" ? <AppIcon icon={PlayIcon} size={10} /> : <AppIcon icon={Tv01Icon} size={10} />}
                                             </div>
                                         )}
                                         <div className="min-w-0">
@@ -113,12 +120,12 @@ export default function SmartSearch({ fullscreen = false, onClose }) {
                         ) : (
                             <div className="py-2">
                                 <p className="text-xs text-neutral-600 px-4 py-2 uppercase tracking-wider font-semibold flex items-center gap-2">
-                                    <FaFire className="text-red-500" size={10} /> Trending
+                                    <AppIcon icon={FireIcon} className="text-red-500" size={10} /> Trending
                                 </p>
                                 {TRENDING.map((q) => (
                                     <button key={q} onClick={() => handleSearch(q)}
                                         className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 transition-colors text-left">
-                                        <FaSearch size={10} className="text-neutral-600 flex-shrink-0" />
+                                        <AppIcon icon={Search01Icon} size={10} className="text-neutral-600 flex-shrink-0" />
                                         <span className="text-neutral-300 text-sm">{q}</span>
                                     </button>
                                 ))}
@@ -127,7 +134,7 @@ export default function SmartSearch({ fullscreen = false, onClose }) {
                         {query.length >= 2 && (
                             <button onClick={() => handleSearch()}
                                 className="w-full flex items-center gap-3 px-4 py-3 border-t border-white/5 hover:bg-white/5 transition-colors">
-                                <FaSearch size={10} className="text-red-500 flex-shrink-0" />
+                                <AppIcon icon={Search01Icon} size={10} className="text-red-500 flex-shrink-0" />
                                 <span className="text-sm text-neutral-300">Search <strong className="text-white">"{query}"</strong></span>
                             </button>
                         )}

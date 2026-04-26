@@ -1,37 +1,42 @@
-// hooks/useLenis.js
-// Cinematic smooth scroll using Lenis
 import { useEffect, useRef } from "react";
-import Lenis from "lenis";
 
 export default function useLenis() {
   const lenisRef = useRef(null);
 
   useEffect(() => {
-    let lenis;
+    let rafId = null;
+    let disposed = false;
 
     async function init() {
-      const { default: Lenis } = await import("lenis");
-      lenis = new Lenis({
+      const { default: Lenis } = await import("@studio-freight/lenis");
+      if (disposed) return;
+
+      const lenis = new Lenis({
         duration: 1.4,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        smooth: true,
         smoothTouch: false,
         touchMultiplier: 2,
       });
 
       lenisRef.current = lenis;
 
-      function raf(time) {
+      const raf = (time) => {
         lenis.raf(time);
-        requestAnimationFrame(raf);
-      }
-      requestAnimationFrame(raf);
+        rafId = requestAnimationFrame(raf);
+      };
+
+      rafId = requestAnimationFrame(raf);
     }
 
-    init();
+    init().catch(() => {});
 
     return () => {
-      if (lenisRef.current) lenisRef.current.destroy();
+      disposed = true;
+      if (rafId) cancelAnimationFrame(rafId);
+      if (lenisRef.current) {
+        lenisRef.current.destroy();
+        lenisRef.current = null;
+      }
     };
   }, []);
 

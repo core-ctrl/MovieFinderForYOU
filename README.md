@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-<div align="center">
+
 
 # 🎬 MOVIEFINDER
 
@@ -169,8 +168,7 @@ This app is a discovery tool only — no content is hosted or distributed.
 <div align="center">
 Built with ❤️ · Data by <a href="https://www.themoviedb.org">TMDB</a>
 </div>
-=======
-<<<<<<< HEAD
+
 # 🎬 Movie Finder — Full-Stack Next.js App
 
 A cinematic dark-themed movie & series discovery app.
@@ -229,7 +227,5 @@ Access at `/admin`. To grant admin access, set `isAdmin: true` on a user in Mong
 | `/api/media/[type]/[id]` | GET | Movie/TV details |
 | `/api/search` | GET | Search TMDB |
 | `/api/admin/stats` | GET | Admin stats (admin only) |
-=======
-# MovieFinderForYOU
->>>>>>> 54200736c0430971ac5f8a79dff6ddc10ae97286
->>>>>>> 3b3f76b6b2f75cfb78a3ee46561373052120bd14
+
+made with ❤️
