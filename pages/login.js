@@ -12,9 +12,8 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
-    // ✅ Improved validation
     const validate = () => {
-        if (!email || email.trim().length === 0) return "Email is required";
+        if (!email.trim()) return "Email is required";
         if (!password) return "Password is required";
         return "";
     };
@@ -22,8 +21,6 @@ export default function LoginPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
-
-        console.log("EMAIL:", email); // 🔍 debug
 
         const validationError = validate();
         if (validationError) {
@@ -42,24 +39,15 @@ export default function LoginPage() {
             if (code === "auth/user-not-found") {
                 setError("No account found with this email.");
             } else if (code === "auth/wrong-password") {
-                setError("Incorrect password. Please try again.");
-            } else if (code === "auth/too-many-requests") {
-                setError("Too many failed attempts. Please try again later.");
-            } else if (code === "auth/invalid-email") {
-                setError("Invalid email address.");
-            } else if (code === "auth/invalid-credential") {
-                setError("Invalid email or password.");
-            } else if (code === "auth/user-disabled") {
-                setError("This account has been disabled.");
+                setError("Incorrect password.");
             } else {
-                setError(err.message || "Something went wrong. Please try again.");
+                setError("Login failed. Try again.");
             }
         } finally {
             setLoading(false);
         }
     };
 
-    // ✅ Google login
     const handleGoogleLogin = async () => {
         setError("");
         setLoading(true);
@@ -69,100 +57,71 @@ export default function LoginPage() {
             router.push("/");
         } catch (err) {
             const code = err?.code || "";
+
             if (code === "auth/popup-closed-by-user") {
-                setError("Sign-in popup was closed before completing.");
-            } else if (code === "auth/cancelled-popup-request") {
-                setError("Another sign-in popup is already open.");
-            } else if (code === "auth/account-exists-with-different-credential") {
-                setError("An account already exists with the same email but different sign-in method.");
-
-                return (
-                    <>
-                        <Head>
-                            <title>Sign In — MovieFinder</title>
-                        </Head>
-
-                        <div className="min-h-screen bg-surface-0 flex items-center justify-center p-4">
-                            <div className="w-full max-w-md glass-strong rounded-2xl p-8 border border-white/10 shadow-2xl">
-
-                                <div className="text-center mb-8">
-                                    <h1 className="text-2xl font-black text-white">Welcome back</h1>
-                                    <p className="text-neutral-500 text-sm mt-1">
-                                        Sign in to access your watchlist
-                                    </p>
-                                </div>
-
-                                <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
-
-                                    {/* EMAIL */}
-                                    <div>
-                                        <label className="block text-sm text-neutral-400 mb-1">
-                                            Email
-                                        </label>
-                                        <input
-                                            type="email"
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                            onInput={(e) => setEmail(e.target.value)} // 🔥 FIX
-                                            placeholder="you@example.com"
-                                            autoComplete="email"
-                                            className="w-full bg-white/5 border border-white/10 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
-                                        />
-                                    </div>
-
-                                    {/* PASSWORD */}
-                                    <div>
-                                        <label className="block text-sm text-neutral-400 mb-1">
-                                            Password
-                                        </label>
-                                        <input
-                                            type="password"
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                            onInput={(e) => setPassword(e.target.value)} // 🔥 FIX
-                                            placeholder="••••••••"
-                                            autoComplete="current-password"
-                                            className="w-full bg-white/5 border border-white/10 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
-                                        />
-                                    </div>
-
-                                    {/* ERROR */}
-                                    {error && (
-                                        <p className="text-red-400 text-sm text-center bg-red-500/10 border border-red-500/20 rounded-xl py-2 px-3">
-                                            {error}
-                                        </p>
-                                    )}
-
-                                    {/* EMAIL LOGIN */}
-                                    <button
-                                        type="submit"
-                                        disabled={loading}
-                                        className="bg-accent hover:bg-accent-dark disabled:opacity-50 text-white font-semibold py-3 rounded-xl"
-                                    >
-                                        {loading ? "Please wait..." : "Sign In"}
-                                    </button>
-
-                                    {/* GOOGLE LOGIN */}
-                                    <button
-                                        type="button"
-                                        onClick={handleGoogleLogin}
-                                        disabled={loading}
-                                        className="bg-white text-black font-semibold py-3 rounded-xl"
-                                    >
-                                        Continue with Google
-                                    </button>
-
-                                </form>
-
-                                <p className="text-center text-xs text-neutral-700 mt-6">
-                                    Don&apos;t have an account?{" "}
-                                    <a href="/" className="text-neutral-500 hover:text-accent">
-                                        Back to home
-                                    </a>
-                                </p>
-
-                            </div>
-                        </div>
-                    </>
-                );
+                setError("Popup closed.");
+            } else {
+                setError("Google sign-in failed.");
             }
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <>
+            <Head>
+                <title>Sign In — MovieFinder</title>
+            </Head>
+
+            <div className="min-h-screen flex items-center justify-center p-4 bg-black">
+                <div className="w-full max-w-md p-8 rounded-xl bg-gray-900 text-white">
+
+                    <h1 className="text-2xl font-bold mb-6 text-center">
+                        Sign In
+                    </h1>
+
+                    <form onSubmit={handleSubmit} className="space-y-4">
+
+                        <input
+                            type="email"
+                            placeholder="Email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="w-full p-3 rounded bg-gray-800"
+                        />
+
+                        <input
+                            type="password"
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="w-full p-3 rounded bg-gray-800"
+                        />
+
+                        {error && (
+                            <p className="text-red-400 text-sm text-center">{error}</p>
+                        )}
+
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full bg-red-600 py-3 rounded"
+                        >
+                            {loading ? "Loading..." : "Sign In"}
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={handleGoogleLogin}
+                            className="w-full bg-white text-black py-3 rounded"
+                        >
+                            Continue with Google
+                        </button>
+
+                    </form>
+                </div>
+            </div>
+        </>
+    );
+}
