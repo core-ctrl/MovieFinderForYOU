@@ -97,13 +97,23 @@ export default function WatchNowButtons({
   region = "IN",
   releaseDate = "",
   theatrical = false,
+  availabilityStatus = null,
 }) {
   const availability = providers || {};
   const flatrate = availability.flatrate || [];
   const rent = availability.rent || [];
   const buy = availability.buy || [];
   const providerRegionLink = availability.link || `https://www.justwatch.com/${region.toLowerCase()}/search?q=${encodeURIComponent(title)}`;
-  const inTheaters = theatrical || ((availability.theatrical?.length || 0) > 0) || (isRecentRelease(releaseDate) && flatrate.length === 0);
+
+  // Use passed availabilityStatus or calculate it
+  // If availabilityStatus is passed, use it directly
+  // Otherwise, calculate based on providers and release date
+  const hasOTTProviders = flatrate.length > 0;
+  const isRecentReleaseDate = isRecentRelease(releaseDate);
+
+  // Determine inTheaters: if explicitly passed as true, or if no OTT and recent release
+  const inTheaters = theatrical || (!hasOTTProviders && isRecentReleaseDate);
+
   const theaterLinks = bookingLinksForRegion(region, title);
 
   const watchProviders = [...flatrate, ...rent, ...buy];
@@ -122,7 +132,7 @@ export default function WatchNowButtons({
     <div className="mt-4">
       <p className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">
         <AppIcon icon={PlayIcon} size={14} />
-        Watch now
+        {availabilityStatus === "STREAMING" ? "Streaming Now" : availabilityStatus === "IN THEATERS" ? "In Theaters" : "Watch now"}
       </p>
 
       <div className="flex flex-wrap gap-3">
