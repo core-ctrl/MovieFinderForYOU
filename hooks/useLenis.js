@@ -8,7 +8,7 @@ export default function useLenis() {
     let disposed = false;
 
     async function init() {
-      const { default: Lenis } = await import("@studio-freight/lenis");
+      const { default: Lenis } = await import("lenis");
       if (disposed) return;
 
       const lenis = new Lenis({
