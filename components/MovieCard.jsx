@@ -48,6 +48,8 @@ export default function MovieCard({ item }) {
   };
 
   // FIX: fetch trailer key from TMDB if not already on item
+  const [trailerLoading, setTrailerLoading] = useState(false);
+
   const handleTrailer = async (e) => {
     e.preventDefault(); e.stopPropagation();
 
@@ -59,7 +61,7 @@ export default function MovieCard({ item }) {
     if (existingKey) {
       dispatch(openTrailer({
         key: existingKey,
-        title: title,
+        title,
         id: item.id,
         type: item.media_type || (isMovie ? "movie" : "tv"),
       }));
@@ -67,6 +69,7 @@ export default function MovieCard({ item }) {
     }
 
     // Fetch from API
+    setTrailerLoading(true);
     try {
       const mediaType = item.media_type || (isMovie ? "movie" : "tv");
       const res = await fetch(`/api/trailer?id=${item.id}&media_type=${mediaType}`);
@@ -75,10 +78,12 @@ export default function MovieCard({ item }) {
       if (key) {
         dispatch(openTrailer({ key, title, id: item.id, type: mediaType }));
       } else {
-        dispatch(openTrailer({ key: null, title, id: item.id, type: mediaType }));
+        alert("Trailer not available");
       }
-    } catch (err) {
-      console.error("Trailer fetch failed", err);
+    } catch {
+      alert("Failed to load trailer");
+    } finally {
+      setTrailerLoading(false);
     }
   };
 

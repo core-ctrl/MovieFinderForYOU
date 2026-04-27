@@ -210,7 +210,7 @@ export default function HeroSlider({ slides = [], onPlayTrailer, wishlist = [], 
     };
 
     // ── Hero trailer button — correct signature: (key, title, id, type)
-    const handleHeroTrailer = () => {
+    const handleHeroTrailer = async () => {
         if (slide?.trailerKey) {
             onPlayTrailer(
                 slide.trailerKey,
@@ -218,8 +218,21 @@ export default function HeroSlider({ slides = [], onPlayTrailer, wishlist = [], 
                 slide.id,
                 slide.media_type || (slide.title ? "movie" : "tv")
             );
-        } else {
-            handlePlayClick();
+            return;
+        }
+        // Fetch trailer from API if not preloaded
+        try {
+            const mediaType = slide.media_type || (slide.title ? "movie" : "tv");
+            const res = await fetch(`/api/trailer?id=${slide.id}&media_type=${mediaType}`);
+            const data = await res.json();
+            const key = data.trailer?.key || null;
+            if (key) {
+                onPlayTrailer(key, slide.title || slide.name, slide.id, mediaType);
+            } else {
+                alert("Trailer not available");
+            }
+        } catch {
+            alert("Failed to load trailer");
         }
     };
 

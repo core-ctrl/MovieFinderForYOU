@@ -70,9 +70,29 @@ export default function MovieCardHover({
             ? `https://image.tmdb.org/t/p/w780${item.backdrop_path || item.poster_path}`
             : "/fallback.jpg";
 
-    const playTrailer = () => {
+    const playTrailer = async () => {
         if (trailerKey) {
-            onPlayTrailer(trailerKey, item.title || item.name);
+            onPlayTrailer(
+                trailerKey,
+                item.title || item.name,
+                item.id,
+                item.media_type || (isMovie ? "movie" : "tv")
+            );
+            return;
+        }
+        // Fetch if not preloaded
+        try {
+            const mediaType = item.media_type || (isMovie ? "movie" : "tv");
+            const res = await fetch(`/api/trailer?id=${item.id}&media_type=${mediaType}`);
+            const data = await res.json();
+            const key = data.trailer?.key || null;
+            if (key) {
+                onPlayTrailer(key, item.title || item.name, item.id, mediaType);
+            } else {
+                alert("Trailer not available");
+            }
+        } catch {
+            alert("Failed to load trailer");
         }
     };
 

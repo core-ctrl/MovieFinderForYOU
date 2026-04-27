@@ -1,12 +1,10 @@
-# Fix Play Trailer Button - TODO
+# Fix Google OAuth 401 invalid_client — Task Tracker
 
-## Steps
-
-- [x] 1. Analyze codebase and identify issues
-- [x] 2. Fix `lib/tmdb.js` - rewrite `pickSafeTrailer` to correctly filter `type === "Trailer" && site === "YouTube"`
-- [x] 3. Fix `components/TrailerModal.jsx` - simplify to iframe-based modal with close on ESC/backdrop click
-- [x] 4. Fix `pages/movies/[id].jsx` - add `isTrailerOpen` state, strict trailer filtering, disable button when no trailer, local modal
-- [x] 5. Fix `pages/series/[id].jsx` - same changes as movies detail page
-- [x] 6. Fix `pages/api/trailer.js` - ensure compatibility with updated `fetchVideos`
-- [x] 7. Test and verify (Build passed for all edited files; unrelated pre-existing error in change-password.js)
+## Plan
+- [ ] 1. Fix `pages/login.js` — correct Firebase popup response handling
+- [ ] 2. Fix `lib/firebase.js` — add runtime env var validation
+- [ ] 3. Fix `lib/oauth.js` — add validation & improve baseUrl
+- [ ] 4. Fix `lib/site.js` — make SITE_DOMAIN configurable via env
+- [ ] 5. Create `.env.example` — comprehensive env var template (placeholders only)
+- [ ] 6. Create `OAUTH_SETUP.md` — step-by-step external dashboard guide
 
