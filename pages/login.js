@@ -90,9 +90,16 @@ export default function LoginPage() {
                             {loading ? "Loading..." : "Sign In"}
                         </button>
 
-                        <p className="text-center text-xs text-neutral-500 pt-2">
-                            Social login temporarily disabled
-                        </p>
+                        <div className="flex flex-col gap-3 pt-2">
+                            <button disabled className="w-full flex items-center justify-center gap-2 rounded bg-gray-800 text-white py-3 opacity-50 cursor-not-allowed relative">
+                                Continue with Google
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] uppercase tracking-wider text-neutral-400 bg-white/10 px-2 py-0.5 rounded-full">Coming Soon</span>
+                            </button>
+                            <button disabled className="w-full flex items-center justify-center gap-2 rounded bg-gray-800 text-white py-3 opacity-50 cursor-not-allowed relative">
+                                Continue with GitHub
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] uppercase tracking-wider text-neutral-400 bg-white/10 px-2 py-0.5 rounded-full">Coming Soon</span>
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>

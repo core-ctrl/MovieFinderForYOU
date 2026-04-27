@@ -13,6 +13,7 @@ import {
   FavouriteIcon,
   Key01Icon,
   Logout01Icon,
+  MessageSquare01Icon,
   PlayIcon,
   Shield01Icon,
   UserMultipleIcon,
@@ -189,13 +190,18 @@ export default function AdminPage() {
           {tabs.map(t => (
             <button key={t.id} onClick={() => setTab(t.id)}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left ${tab === t.id
-                  ? "bg-accent/15 text-accent border border-accent/20"
-                  : "text-neutral-500 hover:text-white hover:bg-white/5"
+                ? "bg-accent/15 text-accent border border-accent/20"
+                : "text-neutral-500 hover:text-white hover:bg-white/5"
                 }`}>
               <span className="text-xs">{t.icon}</span>
               {t.label}
             </button>
           ))}
+          <a href="/admin/feedback"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left text-neutral-500 hover:text-white hover:bg-white/5">
+            <span className="text-xs"><AppIcon icon={MessageSquare01Icon} size={14} /></span>
+            Feedback
+          </a>
         </nav>
 
         <div className="pb-6 px-3 flex flex-col gap-2">

@@ -50,11 +50,23 @@ function PasswordStrength({ password = "" }) {
   );
 }
 
-function SocialButton({ href, icon, label }) {
+function SocialButton({ href, icon, label, disabled }) {
+  const baseClasses = "flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white transition";
+  if (disabled) {
+    return (
+      <div className={`${baseClasses} opacity-50 cursor-not-allowed relative`}>
+        {icon}
+        <span>{label}</span>
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] uppercase tracking-wider text-neutral-400 bg-white/10 px-2 py-0.5 rounded-full">
+          Coming Soon
+        </span>
+      </div>
+    );
+  }
   return (
     <a
       href={href}
-      className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
+      className={`${baseClasses} hover:border-white/20 hover:bg-white/10`}
     >
       {icon}
       <span>{label}</span>
@@ -165,8 +177,8 @@ export default function AuthWidget({ open, onClose, onLogin, externalFeedback })
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
               {mode !== "forgot" && (
                 <div className="flex flex-col gap-3">
-                  <SocialButton href="/api/auth/oauth/google" icon={<AppIcon icon={GoogleIcon} size={14} />} label="Continue with Google" />
-                  <SocialButton href="/api/auth/oauth/github" icon={<AppIcon icon={GithubIcon} size={14} />} label="Continue with GitHub" />
+                  <SocialButton href="/api/auth/oauth/google" icon={<AppIcon icon={GoogleIcon} size={14} />} label="Continue with Google" disabled />
+                  <SocialButton href="/api/auth/oauth/github" icon={<AppIcon icon={GithubIcon} size={14} />} label="Continue with GitHub" disabled />
                   <div className="flex items-center gap-3 py-1">
                     <div className="h-px flex-1 bg-white/10" />
                     <span className="text-xs uppercase tracking-[0.2em] text-neutral-500">or</span>

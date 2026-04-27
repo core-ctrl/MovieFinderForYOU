@@ -10,7 +10,7 @@ import { findRegionOption } from "../lib/preferenceOptions";
 
 const PROVIDER_AFFILIATE = {
   Netflix: null,
-  "Amazon Prime Video": "https://www.amazon.com/dp/",
+  "Amazon Prime Video": "https://www.primevideo.com/",
   "Apple TV": "https://tv.apple.com/",
   Hotstar: "https://www.hotstar.com/",
   JioCinema: "https://www.jiocinema.com/",

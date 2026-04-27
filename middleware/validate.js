@@ -24,7 +24,10 @@ export const watchlistSchema = z.object({
     posterPath: z.string().optional(),
 });
 
-// Validate request body against a Zod schema
+export const feedbackSchema = z.object({
+    userEmail: z.string().email("Invalid email").optional().or(z.literal("")),
+    message: z.string().min(1, "Message cannot be empty").max(2000, "Message cannot exceed 2000 characters"),
+});
 // Returns { success, data, error }
 export function validate(schema, body) {
     const result = schema.safeParse(body);

@@ -203,22 +203,15 @@ export default function MovieCardHover({
                 )}
             </div>
 
-            {/* ANIMATION */}
-            <style jsx>{`
-        @keyframes netflixHover {
-          0% {
-            opacity: 0;
-            transform: translateY(14px) scale(0.92);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-        .animate-netflixHover {
-          animation: netflixHover 0.28s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-        }
-      `}</style>
+            <style>{`
+  @keyframes netflixHover {
+    0% { opacity: 0; transform: translateY(14px) scale(0.92); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .animate-netflixHover {
+    animation: netflixHover 0.28s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  }
+`}</style>
         </div>
     );
 }
