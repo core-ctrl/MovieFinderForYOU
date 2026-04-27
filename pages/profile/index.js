@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import axios from "axios";
 import { setUser, logoutUser } from "../../store/slices/authSlice";
-import { Search01Icon, Logout01Icon, PasswordIcon } from "@hugeicons/core-free-icons";
+import { Search01Icon, Logout01Icon, LockIcon } from "@hugeicons/core-free-icons";
 import { ALL_GENRES, LANGUAGE_OPTIONS, REGION_GROUPS, REGION_OPTIONS } from "../../lib/preferenceOptions";
 import AppIcon from "../../components/AppIcon";
 
@@ -184,7 +184,7 @@ export default function ProfilePage({ user, wishlist = [], openAuth }) {
               onClick={() => setShowPasswordModal(true)}
               className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-neutral-300 transition hover:bg-white/10 hover:text-white"
             >
-              <AppIcon icon={PasswordIcon} size={16} />
+              <AppIcon icon={LockIcon} size={16} />
               Change Password
             </button>
             <button

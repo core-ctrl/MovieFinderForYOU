@@ -3,7 +3,6 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import { signInWithGoogle } from "@/lib/firebaseAuth";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
@@ -48,26 +47,6 @@ export default function LoginPage() {
         }
     };
 
-    const handleGoogleLogin = async () => {
-        setError("");
-        setLoading(true);
-
-        try {
-            await signInWithGoogle();
-            router.push("/");
-        } catch (err) {
-            const code = err?.code || "";
-
-            if (code === "auth/popup-closed-by-user") {
-                setError("Popup closed.");
-            } else {
-                setError("Google sign-in failed.");
-            }
-        } finally {
-            setLoading(false);
-        }
-    };
-
     return (
         <>
             <Head>
@@ -76,19 +55,17 @@ export default function LoginPage() {
 
             <div className="min-h-screen flex items-center justify-center p-4 bg-black">
                 <div className="w-full max-w-md p-8 rounded-xl bg-gray-900 text-white">
-
                     <h1 className="text-2xl font-bold mb-6 text-center">
                         Sign In
                     </h1>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
-
                         <input
                             type="email"
                             placeholder="Email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full p-3 rounded bg-gray-800"
+                            className="w-full p-3 rounded bg-gray-800 text-white"
                         />
 
                         <input
@@ -96,29 +73,26 @@ export default function LoginPage() {
                             placeholder="Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full p-3 rounded bg-gray-800"
+                            className="w-full p-3 rounded bg-gray-800 text-white"
                         />
 
                         {error && (
-                            <p className="text-red-400 text-sm text-center">{error}</p>
+                            <p className="text-red-400 text-sm text-center">
+                                {error}
+                            </p>
                         )}
 
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-red-600 py-3 rounded"
+                            className="w-full bg-red-600 py-3 rounded text-white font-semibold"
                         >
                             {loading ? "Loading..." : "Sign In"}
                         </button>
 
-                        <button
-                            type="button"
-                            onClick={handleGoogleLogin}
-                            className="w-full bg-white text-black py-3 rounded"
-                        >
-                            Continue with Google
-                        </button>
-
+                        <p className="text-center text-xs text-neutral-500 pt-2">
+                            Social login temporarily disabled
+                        </p>
                     </form>
                 </div>
             </div>
